@@ -101,7 +101,7 @@ bm () {
 			used=true
 		fi
 
-		if [[ $1 == 'acp' ]]; then
+		if [[ $1 == 'am' ]]; then
 			cls
 			git add .
 			git commit -m "$2"
@@ -115,7 +115,7 @@ bm () {
 			used=true
 		fi
 
-		if [[ $1 == 's' ]] || [[ $1 == 'sc' ]]; then
+		if [[ $1 == 'status' ]] || [[ $1 == 's' ]] || [[ $1 == 'sc' ]]; then
 			bm
 			echo
 			status=$(git status)
@@ -151,45 +151,25 @@ bm () {
 		fi
 
 		if [[ $1 == 'help' ]]; then
-			printf "                  \e[33mBranch Manager:\e[37m\n"
 			echo "---------------------------------------------------"
-			printf "                     ; ; ;\n"
-      printf "            ;        ;  ;     ;;    ;\n"
-      printf "         ;                 ;         ;  ;\n"
-      printf "                         ;\n"
-      printf "                        ;                ;;\n"
-      printf "        ;          ;            ;              ;\n"
-      printf "        ;            ';,        ;               ;\n"
-      printf "        ;              'b      *\n"
-      printf "         ;              '$    ;;                ;;\n"
-      printf "        ;    ;           $:   ;:               ;\n"
-      printf "       ;;      ;  ;;      *;  @):        ;   ; ;\n"
-      printf "                    ;     :@,@):   ,;**:'   ;\n"
-      printf "        ;      ;,         :@@*: ;;**'      ;   ;\n"
-      printf "                 ';o;    ;:(@';@*'''  ;\n"
-      printf "         ;  ;       'bq,;;:,@@*'   ,*      ;  ;\n"
-      printf "                    ,pSq8,:@)'  ;p*'      ;\n"
-      printf "             ;     '  ; '@@Pp@@*'    ;  ;\n"
-      printf "              ;  ; ;;    Y7'.'     ;  ;\n"
-      printf "                        :@):.\n"
-      printf "                       .:@:'.\n"
-      printf "                     .::(@:.      -Sam Blumenstein-\n"
+			printf "                  \e[33mBranch Manager:\e[37m\n"
 			echo "---------------------------------------------------"
 			echo
 			echo "bm [command]"
+			echo
 			echo "Commands:"
 			echo "[BLANK]:			List branches"
 			echo "[1, 2, 3]:			Checkout branch from list"
-			echo "new/n <branch>:			Update master and create new branch"
+			echo "new/n <branch>:			Pull master, Create new branch"
 			echo "rename/rn <branch>:		Rename local branch"
 			echo "clear: 				Stash and clear"
 			echo "delete:			 	Delete current branch"
-			echo "update/rf: 			Pull Master, Merge to branch"
-			echo "s:				Status of branch"
-			echo "pushup <branch>: 		Create remote branch and push to it"
-			echo "> <description>:		Add, Commit -m <des>, Push (If remote exists)"
-			echo "edit:                           Edit branchmanager.sh"
+			echo "update/rf: 			Pull master, Merge to branch"
+			echo "status/s:			Status of branch"
+			echo "sc:				Get status, check if remote branch exists"
 			echo "check:				Check if local branch has a remote branch"
+			echo "pushup <branch>: 		Create remote branch and push to it"
+			echo "am <description>:		Add, Commit -m <des>, Push (If remote exists)"
 			used=true
 		fi
 else
