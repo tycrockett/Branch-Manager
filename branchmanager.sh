@@ -151,7 +151,7 @@ bm () {
 		fi
 
 		if [[ $1 == 'help' ]]; then
-			echo "---------------------------------------------------"
+			echo
 			printf "                  \e[33mBranch Manager:\e[37m\n"
 			echo "---------------------------------------------------"
 			echo
@@ -184,7 +184,7 @@ bm__changebranch () {
 	br=()
 	current=$(git symbolic-ref --short -q HEAD)
 	if [[ -z $1 ]]; then
-		echo "---------------------------------------------------"
+		echo
 		printf "                  \e[33mBranch Manager:\e[37m\n"
 		echo "---------------------------------------------------"
 	fi
@@ -208,7 +208,7 @@ bm__changebranch () {
 		
 	if [ -z $1 ]
 	then
-		printf "\e[37m ---------------------------------------------------\n"
+		printf "\e[37m---------------------------------------------------\n"
 		echo
 		echo $remoteDir
 	else
