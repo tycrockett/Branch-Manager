@@ -91,7 +91,29 @@ bm () {
 		fi
 
 		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
-			bm__updatebranch
+				if [[ $currentBranch != 'master' ]]; then
+					git checkout master
+				else
+					echo In master
+				fi
+				git pull origin master
+
+				if [[ -z $2 ]]; then 
+					git checkout $currentBranch
+					git merge master
+				fi
+
+				if [[ $2 == 'all' ]]; then
+					for branch in $(git branch | grep "[^* ]+" -Eo);
+					do
+						if [[ $1 != 'master' ]]; then
+							git checkout $branch
+							git merge master
+						fi
+						br+=($branch)
+					done
+				fi
+				git checkout $currentBranch
 			used=true
 		fi
 
@@ -162,9 +184,9 @@ bm () {
 			echo "[1, 2, 3]:			Checkout branch from list"
 			echo "new/n <branch>:			Pull master, Create new branch"
 			echo "rename/rn <branch>:		Rename local branch"
-			echo "clear: 				Stash and clear"
+			echo "clear: 				Stash and optionally clear"
 			echo "delete:			 	Delete current branch"
-			echo "update/rf: 			Pull master, Merge to branch"
+			echo "update/rf <all>: 		Pull master, Merge to current or all branches"
 			echo "status/s:			Status of branch"
 			echo "sc:				Get status, check if remote branch exists"
 			echo "check:				Check if local branch has a remote branch"
@@ -215,18 +237,6 @@ bm__changebranch () {
 		opt=`expr $1 - 1`
 		git checkout ${br[@]:$opt:1}
 	fi
-}
-
-bm__updatebranch () {
-	branch=$(git symbolic-ref --short -q HEAD)
-	if [[ $branch != 'master' ]]; then
-		git checkout master
-	else
-		echo In master
-	fi
-	git pull origin master
-	git checkout $branch
-	git merge master
 }
 
 bm__newbranch () {
