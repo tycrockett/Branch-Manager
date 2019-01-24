@@ -101,7 +101,7 @@ bm () {
 			used=true
 		fi
 
-		if [[ $1 == 'am' ]]; then
+		if [[ $1 == '.' ]]; then
 			cls
 			git add .
 			git commit -m "$2"
@@ -169,7 +169,7 @@ bm () {
 			echo "sc:				Get status, check if remote branch exists"
 			echo "check:				Check if local branch has a remote branch"
 			echo "pushup <branch>: 		Create remote branch and push to it"
-			echo "am <description>:		Add, Commit -m <des>, Push (If remote exists)"
+			echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
 			used=true
 		fi
 else
@@ -183,9 +183,9 @@ bm__changebranch () {
 	br=()
 	current=$(git symbolic-ref --short -q HEAD)
 	if [[ -z $1 ]]; then
-		echo
-		printf  "\e[33mBranch Manager:\n\e[37m"
-		echo ---------------
+		echo "---------------------------------------------------"
+		printf "                  \e[33mBranch Manager:\e[37m\n"
+		echo "---------------------------------------------------"
 	fi
 	for branch in $(git branch | grep "[^* ]+" -Eo);
 	do
@@ -207,8 +207,9 @@ bm__changebranch () {
 		
 	if [ -z $1 ]
 	then
-		printf "\e[37m --------------"
+		printf "\e[37m ---------------------------------------------------\n"
 		echo
+		echo $remoteDir
 	else
 		opt=`expr $1 - 1`
 		git checkout ${br[@]:$opt:1}
