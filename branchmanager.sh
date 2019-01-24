@@ -170,6 +170,7 @@ bm () {
 			echo "check:				Check if local branch has a remote branch"
 			echo "pushup <branch>: 		Create remote branch and push to it"
 			echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
+			echo "remote:				Open remote branch in default browser"
 			used=true
 		fi
 else
