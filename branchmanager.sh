@@ -262,9 +262,13 @@ bm () {
 			echo "remote:				Open remote branch in default browser"
 			echo
 			echo "BETA:"
-			echo "ckey <keyword>:			Creates a bm keyword to current directory"
+			echo "ckey <keyword>:			Use <keyword> to cd into current dir"
 			echo "lkey:				List all bm keywords'"
 			echo "dkey <keyword>:			Deletes bm keyword"
+			echo "USE:"
+			echo "<keyword> = cd into saved directory"
+			echo "<keyword> run = cd into saved directory and start the run cmd"
+			echo "<keyword> altrun = same as run but stats alternate run cmd"
 			used=true
 		fi
 else
