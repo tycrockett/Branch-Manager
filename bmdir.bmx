@@ -54,3 +54,21 @@ if [[ $used == false ]]; then
 	$1 $2 $3 $4
 fi
 }
+
+# bman-Directory
+Definitions+=('bman-->/Users/ty.crockett@getweave.com/BranchManager')
+bman () {
+used=false
+cd /Users/ty.crockett@getweave.com/BranchManager
+if [[ $1 == "run" ]]; then
+	used=true
+	echo
+fi
+if [[ $1 == "altrun" ]]; then
+	used=true
+	echo No Alternate run command created
+fi
+if [[ $used == false ]]; then
+	$1 $2 $3 $4
+fi
+}
