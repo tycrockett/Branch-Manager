@@ -172,6 +172,73 @@ bm () {
 			open "$tmp/tree/$currentBranch"
 		fi
 
+		if [[ $1 == 'ckey' ]]; then
+			if [[ -n $2 ]]; then
+				curdir=$(pwd)
+				printf "Run Command: "
+				read -r -p '' runcmd
+				printf "Alternate Run Command: "
+				read -r -p '' altruncmd
+				if [[ -z $altruncmd ]]; then
+					altruncmd='echo No Alternate run command created'
+				fi
+				echo >> ~/BranchManager/bmdir.bmx
+				echo "# $2-Directory" >> ~/BranchManager/bmdir.bmx
+				echo "Definitions+=('$2-->$curdir')" >> ~/BranchManager/bmdir.bmx
+				echo "$2 () {" >> ~/BranchManager/bmdir.bmx
+				echo 'used=false' >> ~/BranchManager/bmdir.bmx
+				echo "cd $curdir" >> ~/BranchManager/bmdir.bmx
+				echo 'if [[ $1 == "run" ]]; then' >> ~/BranchManager/bmdir.bmx
+				echo '	used=true' >> ~/BranchManager/bmdir.bmx
+				echo "	$runcmd" >> ~/BranchManager/bmdir.bmx
+				echo "fi" >> ~/BranchManager/bmdir.bmx
+				echo 'if [[ $1 == "altrun" ]]; then' >> ~/BranchManager/bmdir.bmx
+				echo '	used=true' >> ~/BranchManager/bmdir.bmx
+				echo "	$altruncmd" >> ~/BranchManager/bmdir.bmx
+				echo "fi" >> ~/BranchManager/bmdir.bmx
+				echo 'if [[ $used == false ]]; then' >> ~/BranchManager/bmdir.bmx
+				echo '	$1 $2 $3 $4' >> ~/BranchManager/bmdir.bmx
+				echo 'fi' >> ~/BranchManager/bmdir.bmx
+				echo "}" >> ~/BranchManager/bmdir.bmx
+				source ~/BranchManager/bmdir.bmx
+			fi
+		fi
+
+		if [[ $1 == "dkey" ]]; then
+			if [[ -n $2 ]]; then
+				sel=$(awk -v line="# "$2"-Directory" '$0 == line {print NR}' ~/BranchManager/bmdir.bmx)
+				echo $sel
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				apnd ~/BranchManager/bmdir.bmx $sel c ''
+				selr=`expr $sel - 1`
+				apnd ~/BranchManager/bmdir.bmx $selr c ''
+				source ~/BranchManager/bmdir.bmx
+			fi
+		fi
+
+		if [[ $1 == "lkey" ]]; then
+			for definition in ${Definitions[@]}
+			do
+				echo $definition
+			done
+		fi
+
 		if [[ $1 == 'help' ]]; then
 			echo
 			printf "                  \e[33mBranch Manager:\e[37m\n"
@@ -193,6 +260,11 @@ bm () {
 			echo "pushup <branch>: 		Create remote branch and push to it"
 			echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
 			echo "remote:				Open remote branch in default browser"
+			echo
+			echo "BETA:"
+			echo "ckey <keyword>:			Creates a bm keyword to current directory"
+			echo "lkey:				List all bm keywords'"
+			echo "dkey <keyword>:			Deletes bm keyword"
 			used=true
 		fi
 else
@@ -272,3 +344,21 @@ bm__apnd () {
 		echo "bm__apnd <filename line (a/c) text>"
 	fi
 }
+
+apnd () {
+	bm__apnd $1 $2 $3 $4
+}
+
+create () {
+	if [[ ! -f ~/BranchManager/bmdir.bmx ]]; then
+		touch ~/BranchManager/bmdir.bmx
+		echo '' >> ~/BranchManager/bmdir.bmx
+		apnd ~/BranchManager/bmdir.bmx 1 c "#Create-Directory"
+		apnd ~/BranchManager/bmdir.bmx 1 a "Definitions=()"
+		Definitions=()
+	else
+		source ~/BranchManager/bmdir.bmx
+	fi
+}
+
+create
