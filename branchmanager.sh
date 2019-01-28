@@ -147,8 +147,13 @@ bm () {
 			else
 				git status
 			fi
-			if [[ $1 == 'sc' ]]; then
+			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
 				bm check
+			fi
+			if [[ $2 == 'all' ]]; then
+				bm check
+				echo
+				bm log
 			fi
 			used=true
 		fi
@@ -170,6 +175,10 @@ bm () {
 		if [[ $1 == 'remote' ]]; then
 			tmp="https://github.$(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
 			open "$tmp/tree/$currentBranch"
+		fi
+
+		if [[ $1 == 'log' ]]; then
+			git log master..$currentBranch --no-decorate
 		fi
 
 		if [[ $1 == 'ckey' ]]; then
@@ -260,6 +269,7 @@ bm () {
 			echo "pushup <branch>: 		Create remote branch and push to it"
 			echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
 			echo "remote:				Open remote branch in default browser"
+			echo "log:				Log commits in current branch"
 			echo
 			echo "BETA:"
 			echo "ckey <keyword>:			Use <keyword> to cd into current dir"
