@@ -22,9 +22,9 @@ Commands: (bm help)
   log:				            Log commits in current branch
   
   BETA:
-    ckey <keyword>:			Use <keyword> to cd into current dir
-    lkey:				List all bm keywords'
-    dkey <keyword>:			Deletes bm keyword
+    ckey <keyword>:			  Use <keyword> to cd into current dir
+    lkey:				          List all bm keywords'
+    dkey <keyword>:		   	Deletes bm keyword
     USE:
       <keyword> = cd into saved directory
       <keyword> run = cd into saved directory and start the run cmd
