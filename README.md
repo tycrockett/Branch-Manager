@@ -8,7 +8,7 @@ TOKNOW:
 
 Commands: (bm help)
 
-  [BLANK]:			          List branches
+  `[BLANK]`:			          List branches
   
   [1, 2, 3]:		        	Checkout branch from list
   
@@ -37,10 +37,18 @@ Commands: (bm help)
   log:				            Log commits in current branch
   
   BETA:
+  
     ckey <keyword>:			  Use <keyword> to cd into current dir
+    
     lkey:				          List all bm keywords'
+    
     dkey <keyword>:		   	Deletes bm keyword
+    
     USE:
+    
       <keyword> = cd into saved directory
+      
       <keyword> run = cd into saved directory and start the run cmd
+      
       <keyword> altrun = same as run but stats alternate run cmd
+      
