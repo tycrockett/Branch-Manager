@@ -4,8 +4,6 @@ TODO:
 In Bash_Profile:
 Add `source ~/BranchManager/BranchManager.sh`
 
-TOKNOW:
-
 Commands: (bm help)
 
   `[BLANK]`:			          List branches
