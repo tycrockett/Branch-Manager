@@ -1,6 +1,5 @@
 bm () {
 	used=false
-
 	if [[ $1 == 'echo' ]]; then
 		test_branch_manager=true
 		bm $2
@@ -8,20 +7,28 @@ bm () {
 	fi
 
 	if [[ $1 == '_edit' ]]; then
-		code ~/branchmanager/branchmanager.sh
+		code ~/Branch-Manager/branchmanager.sh
 		used=true
 	fi
 
 	if [[ $used == false ]] && [[ -n $1 ]]; then
-	used=true
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			if [[ $1 == ${_bm_repos[idx]} ]]; then
 				repo $1 $2 $3 $4
+				used=true
 			fi
 		done
 	fi
 
-	if [ -d .git ]; then
+	if [[ $1 == 'list' ]]; then used=true; repo list; fi
+	if [[ $1 == 'add' ]]; then used=true; repo add; fi
+	if [[ $1 == 'repo' ]]; then used=true; repo $2 $3; fi
+	if [[ $1 == 'edit' ]] && [[ -n $2 ]]; then
+	  used=true
+		repo edit $2
+	fi
+
+	if [ -d .git ] && [[ $used == false ]]; then
 		curdir=$(pwd)
 		currentBranch=$(git symbolic-ref --short -q HEAD)
 		remoteDir=$(git config remote.origin.url)
@@ -226,7 +233,7 @@ bm () {
 			git clone --single-branch --branch $2 $remoteDir
 		fi
 
-		if [[ $1 == 'edit' ]]; then
+		if [[ $1 == 'edit' ]] && [[ -z $2 ]]; then
 			used=true;
 			for ((idx=0; idx<${#_bm_dir[@]}; ++idx)); do
 				if [[ $curdir == ${_bm_dir[idx]} ]]; then
@@ -241,19 +248,32 @@ bm () {
 		if [[ $1 == 'altrun' ]]; then used=true; repo altrun; fi
 		if [[ $1 == 'build' ]]; then used=true; repo build; fi
 		if [[ $1 == 'altbuild' ]]; then used=true; repo altbuild; fi
-		if [[ $1 == 'list' ]]; then used=true; repo list; fi
-		if [[ $1 == 'add' ]]; then used=true; repo add; fi
-		if [[ $1 == 'repo' ]]; then used=true; repo $2 $3; fi
+
 else
+
 	if [[ $1 == 'clone' ]] && [[ -n $2 ]]; then 
 		used=true
-		tmpRepo=$(cut -d "/" -f 2 <<< $2)
-		tmpRepo=${tmpRepo%.*}
-		echo $tmpRepo
-		git clone $2
-		cd $tmpRepo
-		repo add
+		protocol=${2::4}
+		if [[ $protocol == 'http' ]] || [[ $protocol == 'git@' ]]; then
+			if [[ $protocol == 'http' ]]; then
+				printf "\e[32mCloning with HTTPS\n\e[37m"
+				slashes=5
+			fi
+			if [[ $protocol == 'git@' ]]; then
+				printf "\e[32mCloning with SSH\n\e[37m"
+				slashes=2
+			fi
+			tmpRepo=$(cut -d "/" -f $slashes <<< $2)
+			tmpRepo=${tmpRepo%.*}
+			echo $tmpRepo
+			printf "\e[33m"
+			git clone $2
+			cd $tmpRepo
+			printf "\e[36m"
+			repo add
+		fi
 	fi
+
 	if [[ $used == false ]]; then
 		printf "\n\e[33mNot a git repository:\e[37m\n"
 		printf "$(pwd)\n"
@@ -384,7 +404,7 @@ repo () {
 	if [[ $1 == 'add' ]]; then
 		use='t'
 		curdir=$(pwd)
-		if [[ -f ~/BranchManager/repos.bmx ]]; then
+		if [[ -f ~/Branch-Manager/repos.bmx ]]; then
 
 			echo "Directory: $curdir"
 			itsDone=false
@@ -393,9 +413,9 @@ repo () {
 				exists=$(_repo_checkNameExists $keyname)
 				if [[ $exists == $keyname ]] && [[ -n $keyname ]]; then
 					itsDone=true
-					echo "#$keyname" >> ~/BranchManager/repos.bmx
-					echo "_bm_repos+=('$keyname')" >> ~/BranchManager/repos.bmx
-					echo "_bm_dir+=('$curdir')" >> ~/BranchManager/repos.bmx
+					echo "#$keyname" >> ~/Branch-Manager/repos.bmx
+					echo "_bm_repos+=('$keyname')" >> ~/Branch-Manager/repos.bmx
+					echo "_bm_dir+=('$curdir')" >> ~/Branch-Manager/repos.bmx
 				else
 					if [[ -z $keyname ]]; then 
 						itsDone=false; 
@@ -406,12 +426,12 @@ repo () {
 				fi
 			done
 
-			printf "run Command: "; read -r -p '' runcmd; echo "_bm_run+=('$runcmd')" >> ~/BranchManager/repos.bmx
-			printf "altrun Command: "; read -r -p '' altruncmd; echo "_bm_altrun+=('$altruncmd')" >> ~/BranchManager/repos.bmx			
-			printf "build Command: "; read -r -p '' build; echo "_bm_build+=('$build')" >> ~/BranchManager/repos.bmx
-			printf "altbuild Command: "; read -r -p '' altbuild; echo "_bm_altbuild+=('$altbuild')" >> ~/BranchManager/repos.bmx
+			printf "run Command: "; read -r -p '' runcmd; echo "_bm_run+=('$runcmd')" >> ~/Branch-Manager/repos.bmx
+			printf "altrun Command: "; read -r -p '' altruncmd; echo "_bm_altrun+=('$altruncmd')" >> ~/Branch-Manager/repos.bmx			
+			printf "build Command: "; read -r -p '' build; echo "_bm_build+=('$build')" >> ~/Branch-Manager/repos.bmx
+			printf "altbuild Command: "; read -r -p '' altbuild; echo "_bm_altbuild+=('$altbuild')" >> ~/Branch-Manager/repos.bmx
 
-			source ~/BranchManager/repos.bmx
+			source ~/Branch-Manager/repos.bmx
 		else
 			echo "Creating new repos.bmx file. Re-enter in your command."
 			_repo_create
@@ -420,26 +440,26 @@ repo () {
 
 	if [[ $1 == 'del' ]]; then
 		use='t'
-		sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+		sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 		echo $sel
 		bln=$(_repo_getItemsLength)
 		bln=`expr $bln`
 		for ((idx=0; idx<bln; ++idx)); do
-			apnd ~/BranchManager/repos.bmx $sel c ''
+			apnd ~/Branch-Manager/repos.bmx $sel c ''
 		done
-		source ~/BranchManager/repos.bmx
+		source ~/Branch-Manager/repos.bmx
 	fi
 
 	if [[ $1 == 'edit' ]]; then
 		use='t'
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			if [[ $2 == ${_bm_repos[idx]} ]]; then
-				sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+				sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 				echo $sel
 				printf "\e[31m"
 				echo Leave blank to keep current value
 				echo Type ! to indicate an empty value
-				printf "\e[37mDirectory: $curdir\n"
+				printf "\e[37mDirectory: ${_bm_dir[idx]}\n"
 				_repo_edit "Key Name (${_bm_repos[idx]}): " "repos" "${_bm_repos[idx]}" "$sel" true; sel=`expr $sel + 1`
 				_repo_edit "run Command (${_bm_run[idx]}): " "run" "${_bm_run[idx]}" "$sel" false
 				_repo_edit "altrun Command (${_bm_altrun[idx]}): " "altrun" "${_bm_altrun[idx]}" "$sel" false
@@ -449,7 +469,7 @@ repo () {
 				break
 			fi
 		done
-		source ~/BranchManager/repos.bmx
+		source ~/Branch-Manager/repos.bmx
 	fi
 
 	if [[ $1 == 'list' ]]; then
@@ -510,8 +530,8 @@ repo () {
 
 	if [[ $1 == 'init' ]]; then
 		use='t'
-		if [[ -f ~/BranchManager/repos.bmx ]]; then
-			rm ~/BranchManager/repos.bmx
+		if [[ -f ~/Branch-Manager/repos.bmx ]]; then
+			rm ~/Branch-Manager/repos.bmx
 			_repo_create
 		else
 			_repo_create
@@ -542,18 +562,18 @@ repo () {
 }
 
 _repo_create () {
-	if [[ ! -f ~/BranchManager/repos.bmx ]]; then
-		touch ~/BranchManager/repos.bmx
+	if [[ ! -f ~/Branch-Manager/repos.bmx ]]; then
+		touch ~/Branch-Manager/repos.bmx
 		#AddNewItems
-		echo '#Initialize' >> ~/BranchManager/repos.bmx
-		echo '_bm_repos=()' >> ~/BranchManager/repos.bmx
-		echo '_bm_dir=()' >> ~/BranchManager/repos.bmx
-		echo '_bm_run=()' >> ~/BranchManager/repos.bmx
-		echo '_bm_altrun=()' >> ~/BranchManager/repos.bmx
-		echo '_bm_build=()' >> ~/BranchManager/repos.bmx
-		echo '_bm_altbuild=()' >> ~/BranchManager/repos.bmx
+		echo '#Initialize' >> ~/Branch-Manager/repos.bmx
+		echo '_bm_repos=()' >> ~/Branch-Manager/repos.bmx
+		echo '_bm_dir=()' >> ~/Branch-Manager/repos.bmx
+		echo '_bm_run=()' >> ~/Branch-Manager/repos.bmx
+		echo '_bm_altrun=()' >> ~/Branch-Manager/repos.bmx
+		echo '_bm_build=()' >> ~/Branch-Manager/repos.bmx
+		echo '_bm_altbuild=()' >> ~/Branch-Manager/repos.bmx
 	fi
-	source ~/BranchManager/repos.bmx
+	source ~/Branch-Manager/repos.bmx
 }
 
 _repo_checkNameExists () {
@@ -588,31 +608,31 @@ _repo_edit () {
 	resp=$(_repo_checker "$resp" "$3")
 	if [[ $5 == false ]]; then
 		sel=`expr $4 + 1`
-		apnd ~/BranchManager/repos.bmx $sel c "$wcmd$resp')"
+		apnd ~/Branch-Manager/repos.bmx $sel c "$wcmd$resp')"
 	else
-		apnd ~/BranchManager/repos.bmx $sel c "#$resp"
+		apnd ~/Branch-Manager/repos.bmx $sel c "#$resp"
 		sel=`expr $sel + 1`
-		apnd ~/BranchManager/repos.bmx $sel c "$wcmd$resp')"
+		apnd ~/Branch-Manager/repos.bmx $sel c "$wcmd$resp')"
 	fi
 }
 
 _repo_AddNewItem () {
 	
 	ln=$(_repo_getAddLine)
-	job="\		echo '_bm_$1=()' >> ~/BranchManager/repos.bmx"
-	apnd ~/BranchManager/branchmanager.sh $ln a "$job"
+	job="\		echo '_bm_$1=()' >> ~/Branch-Manager/repos.bmx"
+	apnd ~/Branch-Manager/branchmanager.sh $ln a "$job"
 
 	bln=$(_repo_getItemsLength)
-	apnd ~/BranchManager/repos.bmx $bln a "_bm_$1=()"
+	apnd ~/Branch-Manager/repos.bmx $bln a "_bm_$1=()"
 	for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
-		sel=$(awk -v line="#"${_bm_repos[idx]} '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+		sel=$(awk -v line="#"${_bm_repos[idx]} '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 		selr=`expr $sel + $bln - 1`
-		apnd ~/BranchManager/repos.bmx $selr a "_bm_$1+=('')"
+		apnd ~/Branch-Manager/repos.bmx $selr a "_bm_$1+=('')"
 	done
 }
 
 _repo_getItemsLength () {
-	bln=$(awk -v line="#"${_bm_repos[0]} '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+	bln=$(awk -v line="#"${_bm_repos[0]} '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 	if [[ -z $bln ]]; then
 		bln=$(_repo_getEndOfReposFile)
 	else
@@ -622,13 +642,13 @@ _repo_getItemsLength () {
 }
 
 _repo_getEndOfReposFile () {
-	celn=$(tail -n 1 ~/BranchManager/repos.bmx)
-	eln=$(awk -v line="$celn" '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+	celn=$(tail -n 1 ~/Branch-Manager/repos.bmx)
+	eln=$(awk -v line="$celn" '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 	echo $eln
 }
 
 _repo_getAddLine () {
-	eln=$(awk -v line="		#AddNewItems" '$0 == line {print NR}' ~/BranchManager/branchmanager.sh)
+	eln=$(awk -v line="		#AddNewItems" '$0 == line {print NR}' ~/Branch-Manager/branchmanager.sh)
 	iln=$(_repo_getItemsLength)
 	ln=`expr $eln + $iln`
 	echo $ln
