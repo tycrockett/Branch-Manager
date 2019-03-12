@@ -1,18 +1,35 @@
 bm () {
+	used=false
+
+	if [[ $1 == 'echo' ]]; then
+		test_branch_manager=true
+		bm $2
+		test_branch_manager=false
+	fi
+
 	if [[ $1 == '_edit' ]]; then
 		code ~/branchmanager/branchmanager.sh
 		used=true
 	fi
+
+	if [[ $used == false ]] && [[ -n $1 ]]; then
+	used=true
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			if [[ $1 == ${_bm_repos[idx]} ]]; then
+				repo $1 $2 $3 $4
+			fi
+		done
+	fi
+
 	if [ -d .git ]; then
+		curdir=$(pwd)
 		currentBranch=$(git symbolic-ref --short -q HEAD)
 		remoteDir=$(git config remote.origin.url)
 		re='^[0-9]+$'
-		used=false
 		if [[ -z $1 ]]; then
 			bm__changebranch
 			used=true
 		fi
-
 		if [[ $1 =~ $re ]]; then
 			status=$(git status)
 			fixed=${status: -37}
@@ -36,7 +53,6 @@ bm () {
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
 				bm__newbranch $2
-				echo "$2 Successfully created"
 				bm
 			else
 				echo
@@ -54,14 +70,15 @@ bm () {
 		fi
 		
 		if [[ $1 == 'clear' ]]; then
+			if [[ $2 == '-f' ]]; then
+				git add .
+			fi
 			used=true
 			git stash
-			printf "\e[32mBranch stash successful!\n"
 			printf "\e[31mPermanetly clear stash on \e[32m$currentBranch\e[31m? \e[37m"
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 				git stash clear
-				printf "\e[32mCleared Stash! \e[37m \n"
 			fi
 		fi
 
@@ -90,31 +107,54 @@ bm () {
 			fi
 		fi
 
-		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
-				if [[ $currentBranch != 'master' ]]; then
-					git checkout master
-				else
-					echo In master
-				fi
-				git pull origin master
-
-				if [[ -z $2 ]]; then 
-					git checkout $currentBranch
-					git merge master
-				fi
-
-				if [[ $2 == 'all' ]]; then
-					for branch in $(git branch | grep "[^* ]+" -Eo);
-					do
-						if [[ $1 != 'master' ]]; then
-							git checkout $branch
-							git merge master
-						fi
-						br+=($branch)
-					done
-				fi
-				git checkout $currentBranch
+		if [[ $1 == 'compop' ]]; then
 			used=true
+			cls
+			printf "\e[31mPermanetly delete last commit on \e[32m$currentBranch\e[31m? \e[37m"
+			read -r -p '' response
+			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+				git reset --hard HEAD^
+				bm log
+			fi
+		fi
+
+		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
+			printf "\e[33m"
+			if [[ $currentBranch != 'master' ]]; then
+				git checkout master
+			fi
+			git pull origin master
+			printf "\e[37m"
+
+			if [[ -z $2 ]] && [[ $currentBranch != 'master' ]]; then
+				printf "\e[32m"
+				git checkout $currentBranch
+				printf "\e[37m"
+				git merge master
+			fi
+
+			if [[ $2 == 'all' ]]; then
+				for branch in $(git branch | grep "[^* ]+" -Eo);
+				do
+					if [[ $branch != 'master' ]]; then
+						printf "\e[32m"
+						git checkout $branch
+						printf "\e[37m"
+						git merge master
+					fi
+					br+=($branch)
+				done
+				if [[ $branch != $currentBranch ]]; then 
+					echo
+					printf "\e[34m"
+					git checkout $currentBranch 
+				fi
+			fi
+			used=true
+		fi
+
+		if [[ $1 == 'pull' ]]; then
+			git pull
 		fi
 
 		if [[ $1 == 'pushup' ]]; then
@@ -127,11 +167,9 @@ bm () {
 			cls
 			git add .
 			git commit -m "$2"
-			echo Commit Successful
 			checkit=$(git ls-remote $remoteDir $currentBranch) 
 			if [[ -n $checkit ]]; then
 				git push
-				echo Push Successful
 			fi
 			bm s
 			used=true
@@ -173,117 +211,94 @@ bm () {
 		fi
 
 		if [[ $1 == 'remote' ]]; then
+			used=true
 			tmp="https://github.$(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
 			open "$tmp/tree/$currentBranch"
 		fi
 
 		if [[ $1 == 'log' ]]; then
+			used=true
 			git log master..$currentBranch --no-decorate
 		fi
 
-		if [[ $1 == 'ckey' ]]; then
-			if [[ -n $2 ]]; then
-				curdir=$(pwd)
-				printf "Run Command: "
-				read -r -p '' runcmd
-				printf "Alternate Run Command: "
-				read -r -p '' altruncmd
-				if [[ -z $altruncmd ]]; then
-					altruncmd='echo No Alternate run command created'
+		if [[ $1 == 'rb-clone' ]]; then
+			used=true
+			git clone --single-branch --branch $2 $remoteDir
+		fi
+
+		if [[ $1 == 'edit' ]]; then
+			used=true;
+			for ((idx=0; idx<${#_bm_dir[@]}; ++idx)); do
+				if [[ $curdir == ${_bm_dir[idx]} ]]; then
+					repo edit ${_bm_repos[idx]}
+					break;
 				fi
-				echo >> ~/BranchManager/bmdir.bmx
-				echo "# $2-Directory" >> ~/BranchManager/bmdir.bmx
-				echo "Definitions+=('$2-->$curdir')" >> ~/BranchManager/bmdir.bmx
-				echo "$2 () {" >> ~/BranchManager/bmdir.bmx
-				echo 'used=false' >> ~/BranchManager/bmdir.bmx
-				echo "cd $curdir" >> ~/BranchManager/bmdir.bmx
-				echo 'if [[ $1 == "run" ]]; then' >> ~/BranchManager/bmdir.bmx
-				echo '	used=true' >> ~/BranchManager/bmdir.bmx
-				echo "	$runcmd" >> ~/BranchManager/bmdir.bmx
-				echo "fi" >> ~/BranchManager/bmdir.bmx
-				echo 'if [[ $1 == "altrun" ]]; then' >> ~/BranchManager/bmdir.bmx
-				echo '	used=true' >> ~/BranchManager/bmdir.bmx
-				echo "	$altruncmd" >> ~/BranchManager/bmdir.bmx
-				echo "fi" >> ~/BranchManager/bmdir.bmx
-				echo 'if [[ $used == false ]]; then' >> ~/BranchManager/bmdir.bmx
-				echo '	$1 $2 $3 $4' >> ~/BranchManager/bmdir.bmx
-				echo 'fi' >> ~/BranchManager/bmdir.bmx
-				echo "}" >> ~/BranchManager/bmdir.bmx
-				source ~/BranchManager/bmdir.bmx
-			fi
-		fi
-
-		if [[ $1 == "dkey" ]]; then
-			if [[ -n $2 ]]; then
-				sel=$(awk -v line="# "$2"-Directory" '$0 == line {print NR}' ~/BranchManager/bmdir.bmx)
-				echo $sel
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				apnd ~/BranchManager/bmdir.bmx $sel c ''
-				selr=`expr $sel - 1`
-				apnd ~/BranchManager/bmdir.bmx $selr c ''
-				source ~/BranchManager/bmdir.bmx
-			fi
-		fi
-
-		if [[ $1 == "lkey" ]]; then
-			for definition in ${Definitions[@]}
-			do
-				echo $definition
 			done
 		fi
 
-		if [[ $1 == 'help' ]]; then
-			echo
-			printf "                  \e[33mBranch Manager:\e[37m\n"
-			echo "---------------------------------------------------"
-			echo
-			echo "bm [command]"
-			echo
-			echo "Commands:"
-			echo "[BLANK]:			List branches"
-			echo "[1, 2, 3]:			Checkout branch from list"
-			echo "new/n <branch>:			Pull master, Create new branch"
-			echo "rename/rn <branch>:		Rename local branch"
-			echo "clear: 				Stash and optionally clear"
-			echo "delete:			 	Delete current branch"
-			echo "update/rf <all>: 		Pull master, Merge to current or all branches"
-			echo "status/s:			Status of branch"
-			echo "sc:				Get status, check if remote branch exists"
-			echo "check:				Check if local branch has a remote branch"
-			echo "pushup <branch>: 		Create remote branch and push to it"
-			echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
-			echo "remote:				Open remote branch in default browser"
-			echo "log:				Log commits in current branch"
-			echo
-			echo "BETA:"
-			echo "ckey <keyword>:			Use <keyword> to cd into current dir"
-			echo "lkey:				List all bm keywords'"
-			echo "dkey <keyword>:			Deletes bm keyword"
-			echo "USE:"
-			echo "<keyword> = cd into saved directory"
-			echo "<keyword> run = cd into saved directory and start the run cmd"
-			echo "<keyword> altrun = same as run but stats alternate run cmd"
-			used=true
-		fi
+		if [[ $1 == 'help' ]]; then used=true; fi
+		if [[ $1 == 'run' ]]; then used=true; repo run; fi
+		if [[ $1 == 'altrun' ]]; then used=true; repo altrun; fi
+		if [[ $1 == 'build' ]]; then used=true; repo build; fi
+		if [[ $1 == 'altbuild' ]]; then used=true; repo altbuild; fi
+		if [[ $1 == 'list' ]]; then used=true; repo list; fi
+		if [[ $1 == 'add' ]]; then used=true; repo add; fi
+		if [[ $1 == 'repo' ]]; then used=true; repo $2 $3; fi
 else
-  printf "\n\e[33mNot a git repository:\e[37m\n"
-	printf "$(pwd)\n"
+	if [[ $1 == 'clone' ]] && [[ -n $2 ]]; then 
+		used=true
+		tmpRepo=$(cut -d "/" -f 2 <<< $2)
+		tmpRepo=${tmpRepo%.*}
+		echo $tmpRepo
+		git clone $2
+		cd $tmpRepo
+		repo add
+	fi
+	if [[ $used == false ]]; then
+		printf "\n\e[33mNot a git repository:\e[37m\n"
+		printf "$(pwd)\n"
+	fi
+fi
+
+if [[ $1 == 'help' ]]; then
+	echo
+	printf "                  \e[33mBranch Manager:\e[37m\n"
+	echo "---------------------------------------------------"
+	echo
+	echo "bm [command]"
+	echo
+	echo "Commands:"
+	echo "[BLANK]:			List branches"
+	echo "[1, 2, 3]:			Checkout branch from list"
+	echo "new/n <branch>:			Pull master, Create new branch"
+	echo "rename/rn <branch>:		Rename local branch"
+	echo "clear: 				Stash and optionally clear"
+	echo "delete:			 	Delete current branch"
+	echo "update/rf <all>: 		Pull master, Merge to current or all branches"
+	echo "pull:				Git Pull"
+	echo "status/s:			Status of branch"
+	echo "sc:				Get status, check if remote branch exists"
+	echo "check:				Check if local branch has a remote branch"
+	echo "pushup <branch>: 		Create remote branch and push to it"
+	echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
+	echo "remote:				Open remote branch in default browser"
+	echo "log:				Log commits in current branch"
+	echo "compop:				Delete last commit on current branch"
+	echo "clone:				Git Clone --> Create repo keys and cmds"
+	echo "repo:				Display repo cmds and directory"
+	echo "run:				Start assigned repo run cmd"
+	echo "add:				Assign a keyword to current directory and add repo cmds"
+	echo "list:				List all repo keys"
+	echo "repo del [key]:			Delete repo keys and associated cmds"
+	echo
+	used=true
+fi
+if [[ $test_branch_manager == true ]]; then
+	if [[ $used == true ]]; then
+		echo "$1 is a Branch Manager command"
+	else
+		echo "!Invalid!"
+	fi
 fi
 }
 
@@ -352,7 +367,7 @@ bm__delbranch () {
 
 bm__apnd () {
 	if [[ $1 != 'help' ]]; then
-		sed -i "" "$2"$3'\'$'\n'$4$'\n' $1
+		sed -i "" "$2"$3'\'$'\n'"$4"$'\n' $1
 	else
 		echo
 		echo "bm__apnd <filename line (a/c) text>"
@@ -360,19 +375,263 @@ bm__apnd () {
 }
 
 apnd () {
-	bm__apnd $1 $2 $3 $4
+	bm__apnd $1 $2 "$3" "$4"
 }
 
-create () {
-	if [[ ! -f ~/BranchManager/bmdir.bmx ]]; then
-		touch ~/BranchManager/bmdir.bmx
-		echo '' >> ~/BranchManager/bmdir.bmx
-		apnd ~/BranchManager/bmdir.bmx 1 c "#Create-Directory"
-		apnd ~/BranchManager/bmdir.bmx 1 a "Definitions=()"
-		Definitions=()
-	else
-		source ~/BranchManager/bmdir.bmx
+repo () {
+	use='f'
+	curdir=$(pwd)
+	if [[ $1 == 'add' ]]; then
+		use='t'
+		curdir=$(pwd)
+		if [[ -f ~/BranchManager/repos.bmx ]]; then
+
+			echo "Directory: $curdir"
+			itsDone=false
+			while [[ $itsDone == false ]]; do
+				printf "Key Name: "; read -r -p '' keyname
+				exists=$(_repo_checkNameExists $keyname)
+				if [[ $exists == $keyname ]] && [[ -n $keyname ]]; then
+					itsDone=true
+					echo "#$keyname" >> ~/BranchManager/repos.bmx
+					echo "_bm_repos+=('$keyname')" >> ~/BranchManager/repos.bmx
+					echo "_bm_dir+=('$curdir')" >> ~/BranchManager/repos.bmx
+				else
+					if [[ -z $keyname ]]; then 
+						itsDone=false; 
+						printf "\e[31mKeyword can't be blank\n\e[37m"; 
+					else
+						printf "\e[31mKeyword already exists\n\e[37m"
+					fi	
+				fi
+			done
+
+			printf "run Command: "; read -r -p '' runcmd; echo "_bm_run+=('$runcmd')" >> ~/BranchManager/repos.bmx
+			printf "altrun Command: "; read -r -p '' altruncmd; echo "_bm_altrun+=('$altruncmd')" >> ~/BranchManager/repos.bmx			
+			printf "build Command: "; read -r -p '' build; echo "_bm_build+=('$build')" >> ~/BranchManager/repos.bmx
+			printf "altbuild Command: "; read -r -p '' altbuild; echo "_bm_altbuild+=('$altbuild')" >> ~/BranchManager/repos.bmx
+
+			source ~/BranchManager/repos.bmx
+		else
+			echo "Creating new repos.bmx file. Re-enter in your command."
+			_repo_create
+		fi
+	fi
+
+	if [[ $1 == 'del' ]]; then
+		use='t'
+		sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+		echo $sel
+		bln=$(_repo_getItemsLength)
+		bln=`expr $bln`
+		for ((idx=0; idx<bln; ++idx)); do
+			apnd ~/BranchManager/repos.bmx $sel c ''
+		done
+		source ~/BranchManager/repos.bmx
+	fi
+
+	if [[ $1 == 'edit' ]]; then
+		use='t'
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			if [[ $2 == ${_bm_repos[idx]} ]]; then
+				sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+				echo $sel
+				printf "\e[31m"
+				echo Leave blank to keep current value
+				echo Type ! to indicate an empty value
+				printf "\e[37mDirectory: $curdir\n"
+				_repo_edit "Key Name (${_bm_repos[idx]}): " "repos" "${_bm_repos[idx]}" "$sel" true; sel=`expr $sel + 1`
+				_repo_edit "run Command (${_bm_run[idx]}): " "run" "${_bm_run[idx]}" "$sel" false
+				_repo_edit "altrun Command (${_bm_altrun[idx]}): " "altrun" "${_bm_altrun[idx]}" "$sel" false
+				_repo_edit "build Command (${_bm_build[idx]}): " "build" "${_bm_build[idx]}" "$sel" false
+				_repo_edit "altbuild Command (${_bm_altbuild[idx]}): " "altbuild" "${_bm_altbuild[idx]}" "$sel" false
+
+				break
+			fi
+		done
+		source ~/BranchManager/repos.bmx
+	fi
+
+	if [[ $1 == 'list' ]]; then
+		use='t'
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			printf "\e[32m${_bm_repos[idx]}\e[38m --> \e[37m${_bm_dir[idx]}\n"
+			printf "\e[34m"
+			printf "  run: \e[33m${_bm_run[idx]}\e[34m\n"
+			printf "  altrun: \e[33m${_bm_altrun[idx]}\e[34m\n"
+			printf "  build: \e[33m${_bm_build[idx]}\e[34m\n"
+			printf "  altbuild: \e[33m${_bm_altbuild[idx]}\e[34m\n"
+			printf "\e[37m\n"
+		done 
+	fi
+
+	if [[ -z $1 ]]; then
+		doneit='f'
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			if [[ $curdir == ${_bm_dir[idx]} ]]; then
+				doneit='t'
+				printf "\e[32m${_bm_repos[idx]}\e[38m --> \e[37m${_bm_dir[idx]}\n"
+				printf "\e[34m"
+				printf "  run: \e[33m${_bm_run[idx]}\e[34m\n"
+				printf "  altrun: \e[33m${_bm_altrun[idx]}\e[34m\n"
+				printf "  build: \e[33m${_bm_build[idx]}\e[34m\n"
+				printf "  altbuild: \e[33m${_bm_altbuild[idx]}\e[34m\n"
+				printf "\e[37m\n"
+			fi
+		done 
+		if [[ $doneit == 'f' ]]; then
+			echo $curdir
+			printf "\e[34m[!] This directory does not have a repo key set up.\e[37m\n"
+			printf "Use \e[35mbm add\e[37m to create a new repo key."
+		fi
+	fi
+
+	if [[ $1 == 'run' ]] || [[ $1 == 'altrun' ]] || [[ $1 == 'build' ]] || [[ $1 == 'altbuild' ]]; then
+		use='t'
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			if [[ $curdir == ${_bm_dir[idx]} ]]; then
+				if [[ $1 == 'run' ]]; then runcmd=${_bm_run[idx]}; fi
+				if [[ $1 == 'altrun' ]]; then runcmd=${_bm_altrun[idx]}; fi
+				if [[ $1 == 'build' ]]; then runcmd=${_bm_build[idx]}; fi
+				if [[ $1 == 'altbuild' ]]; then runcmd=${_bm_altbuild[idx]}; fi
+				printf "\e[32mrunning cmd: \e[37m$runcmd\n"
+				$runcmd
+			fi
+		done
+	fi
+
+	if [[ $1 == 'remote' ]]; then
+		if [ -d .git ]; then
+			currentBranch=$(git symbolic-ref --short -q HEAD)
+			tmp="https://github.$(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
+			open "$tmp/tree/$currentBranch"
+		fi
+	fi
+
+	if [[ $1 == 'init' ]]; then
+		use='t'
+		if [[ -f ~/BranchManager/repos.bmx ]]; then
+			rm ~/BranchManager/repos.bmx
+			_repo_create
+		else
+			_repo_create
+		fi
+		cd $curdir
+	fi
+
+	if [[ $use == 'f' ]]; then
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			if [[ $1 == ${_bm_repos[idx]} ]]; then
+				repo=$idx
+			fi
+		done
+		if [[ -n $1 ]]; then
+			cd ${_bm_dir[repo]}
+			if [[ $2 == 'run' ]]; then
+				printf "\e[32mrunning cmd: \e[37m${_bm_run[repo]}\n"
+				${_bm_run[repo]}
+			elif [[ $2 == 'altrun' ]]
+			then
+				printf "\e[32mrunning cmd: \e[37m${_bm_altrun[repo]}\n"
+				${_bm_altrun[repo]}
+			else
+				$2 $3 $4
+			fi
+		fi
 	fi
 }
 
-create
+_repo_create () {
+	if [[ ! -f ~/BranchManager/repos.bmx ]]; then
+		touch ~/BranchManager/repos.bmx
+		#AddNewItems
+		echo '#Initialize' >> ~/BranchManager/repos.bmx
+		echo '_bm_repos=()' >> ~/BranchManager/repos.bmx
+		echo '_bm_dir=()' >> ~/BranchManager/repos.bmx
+		echo '_bm_run=()' >> ~/BranchManager/repos.bmx
+		echo '_bm_altrun=()' >> ~/BranchManager/repos.bmx
+		echo '_bm_build=()' >> ~/BranchManager/repos.bmx
+		echo '_bm_altbuild=()' >> ~/BranchManager/repos.bmx
+	fi
+	source ~/BranchManager/repos.bmx
+}
+
+_repo_checkNameExists () {
+	checked=false
+		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+			if [[ $1 == ${_bm_repos[idx]} ]]; then
+				checked=true
+				echo "!!Invalid!!"
+			fi
+		done
+	if [[ $checked == false ]]; then
+		echo $1
+	fi
+}
+
+_repo_checker () {
+	if [[ $1 == '!' ]]; then
+		echo ""
+	fi
+	if [[ $1 == '' ]]; then
+		echo "$2"	
+	fi
+	if [[ $1 != '!' ]] && [[ $1 != '' ]]; then
+		echo "$1"
+	fi
+}
+
+_repo_edit () {
+	wcmd="_bm_$2+=('"
+	printf "$1"
+	read -r -p '' resp
+	resp=$(_repo_checker "$resp" "$3")
+	if [[ $5 == false ]]; then
+		sel=`expr $4 + 1`
+		apnd ~/BranchManager/repos.bmx $sel c "$wcmd$resp')"
+	else
+		apnd ~/BranchManager/repos.bmx $sel c "#$resp"
+		sel=`expr $sel + 1`
+		apnd ~/BranchManager/repos.bmx $sel c "$wcmd$resp')"
+	fi
+}
+
+_repo_AddNewItem () {
+	
+	ln=$(_repo_getAddLine)
+	job="\		echo '_bm_$1=()' >> ~/BranchManager/repos.bmx"
+	apnd ~/BranchManager/branchmanager.sh $ln a "$job"
+
+	bln=$(_repo_getItemsLength)
+	apnd ~/BranchManager/repos.bmx $bln a "_bm_$1=()"
+	for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
+		sel=$(awk -v line="#"${_bm_repos[idx]} '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+		selr=`expr $sel + $bln - 1`
+		apnd ~/BranchManager/repos.bmx $selr a "_bm_$1+=('')"
+	done
+}
+
+_repo_getItemsLength () {
+	bln=$(awk -v line="#"${_bm_repos[0]} '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+	if [[ -z $bln ]]; then
+		bln=$(_repo_getEndOfReposFile)
+	else
+		bln=`expr $bln - 1`
+	fi
+	echo $bln
+}
+
+_repo_getEndOfReposFile () {
+	celn=$(tail -n 1 ~/BranchManager/repos.bmx)
+	eln=$(awk -v line="$celn" '$0 == line {print NR}' ~/BranchManager/repos.bmx)
+	echo $eln
+}
+
+_repo_getAddLine () {
+	eln=$(awk -v line="		#AddNewItems" '$0 == line {print NR}' ~/BranchManager/branchmanager.sh)
+	iln=$(_repo_getItemsLength)
+	ln=`expr $eln + $iln`
+	echo $ln
+}
+
+_repo_create
