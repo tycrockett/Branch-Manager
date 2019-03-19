@@ -77,7 +77,7 @@ bm () {
 		fi
 		
 		if [[ $1 == 'clear' ]]; then
-			if [[ $2 == '-f' ]]; then
+			if [[ $2 == '-a' ]]; then
 				git add .
 			fi
 			used=true
@@ -171,12 +171,20 @@ bm () {
 		fi
 
 		if [[ $1 == '.' ]]; then
-			cls
-			git add .
-			git commit -m "$2"
-			checkit=$(git ls-remote $remoteDir $currentBranch) 
-			if [[ -n $checkit ]]; then
-				git push
+
+			if [[ -z $2 ]]; then
+				cls
+				git add .
+				git commit -m ""
+			fi
+			if [[ -n $2 ]]; then
+				cls
+				git add .
+				git commit -m "$2"
+				checkit=$(git ls-remote $remoteDir $currentBranch) 
+				if [[ -n $checkit ]]; then
+					git push
+				fi
 			fi
 			bm s
 			used=true
@@ -301,6 +309,7 @@ if [[ $1 == 'help' ]]; then
 	echo "check:				Check if local branch has a remote branch"
 	echo "pushup <branch>: 		Create remote branch and push to it"
 	echo ". <description>:		Add, Commit -m <des>, Push (If remote exists)"
+	echo ". clean:			Git Add . / Git Commit"
 	echo "remote:				Open remote branch in default browser"
 	echo "log:				Log commits in current branch"
 	echo "compop:				Delete last commit on current branch"
