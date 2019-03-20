@@ -44,7 +44,7 @@ bm () {
 				bm__changebranch $1
 				bm
 			else
-				cls
+				clear
 				echo
 				printf "\e[31mCouldn't switch branches\e[37m\n"
 				echo "Commit your changes or"
@@ -55,7 +55,7 @@ bm () {
 		fi
 
 		if [[ $1 == 'new' ]] || [[ $1 == 'n' ]]; then
-			cls
+			clear
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
@@ -90,7 +90,7 @@ bm () {
 		fi
 
 		if [[ $1 == 'delete' ]]; then
-			cls
+			clear
 			used=true
 			status=$(git status)
 			fixed=${status: -37}
@@ -99,7 +99,7 @@ bm () {
 				printf "\e[31mPermanetly delete \e[32m$currentBranch\e[31m? \e[37m"
 				read -r -p '' response
 				if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-					cls
+					clear
 					bm__delbranch $2
 					bm
 				else
@@ -116,7 +116,7 @@ bm () {
 
 		if [[ $1 == 'compop' ]]; then
 			used=true
-			cls
+			clear
 			printf "\e[31mPermanetly delete last commit on \e[32m$currentBranch\e[31m? \e[37m"
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -173,12 +173,12 @@ bm () {
 		if [[ $1 == '.' ]]; then
 
 			if [[ -z $2 ]]; then
-				cls
+				clear
 				git add .
 				git commit -m ""
 			fi
 			if [[ -n $2 ]]; then
-				cls
+				clear
 				git add .
 				git commit -m "$2"
 				checkit=$(git ls-remote $remoteDir $currentBranch) 
@@ -186,7 +186,7 @@ bm () {
 					git push
 				fi
 			fi
-			if [[ $3 != '-d' ]]; then cls; fi
+			if [[ $3 != '-d' ]]; then clear; fi
 			bm s
 			used=true
 		fi
