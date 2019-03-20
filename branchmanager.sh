@@ -22,7 +22,7 @@ bm () {
 
 	if [[ $1 == 'list' ]]; then used=true; repo list; fi
 	if [[ $1 == 'add' ]]; then used=true; repo add; fi
-	if [[ $1 == 'repo' ]]; then used=true; repo $2 $3; fi
+	if [[ $1 == 'repo' ]]; then used=true; repo "$2" "$3"; fi
 	if [[ $1 == 'edit' ]] && [[ -n $2 ]]; then
 	  used=true
 		repo edit $2
@@ -186,6 +186,7 @@ bm () {
 					git push
 				fi
 			fi
+			if [[ $3 != '-d' ]]; then cls; fi
 			bm s
 			used=true
 		fi
@@ -278,7 +279,11 @@ else
 			git clone $2
 			cd $tmpRepo
 			printf "\e[36m"
-			repo add
+			printf "\e[32mWould you like to add a repo key? \e[37m"
+			read -r -p '' response
+			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+				repo add
+			fi
 		fi
 	fi
 
@@ -307,7 +312,7 @@ if [[ $1 == 'help' ]]; then
 	echo "status/s:			status of branch"
 	echo "sc:				git status, check if remote branch exists"
 	echo "check:				check if local branch has a remote branch"
-	echo "pushup: 		create remote branch and push to it"
+	echo "pushup: 			create remote branch and push to it"
 	echo ". <description>:		add, commit -m <des>, push (If remote exists)"
 	echo "remote:				open remote branch in default browser"
 	echo "log:				log commits in current branch"
@@ -446,12 +451,12 @@ repo () {
 		fi
 	fi
 
-	if [[ $1 == 'del' ]]; then
+	if [[ $1 == 'del' ]] && [[ -n $2 ]]; then
 		use='t'
 		sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 		echo $sel
 		bln=$(_repo_getItemsLength)
-		bln=`expr $bln`
+		bln=`expr $bln - 1`
 		for ((idx=0; idx<bln; ++idx)); do
 			apnd ~/Branch-Manager/repos.bmx $sel c ''
 		done
