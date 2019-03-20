@@ -1,6 +1,6 @@
 # Branch-Manager
 Add To Bash_Profile:
-source ~/BranchManager/BranchManager.sh
+source ~/Branch-Manager/branchmanager.sh
 
 bm [command]
 
