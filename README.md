@@ -2,6 +2,8 @@
 Add To Bash_Profile:
 source ~/Branch-Manager/branchmanager.sh
 
+bm help
+
 bm [command]
 
 Commands:
