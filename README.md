@@ -4,26 +4,26 @@ source ~/Branch-Manager/branchmanager.sh
 
 bm [command]
 
-	Commands:
-	[BLANK]:		          	List branches
-	[1, 2, 3]:		        	Checkout branch from list
-	new/n <branch>:		    	Pull master, Create new branch
-	rename/rn <branch>:	  	Rename local branch
-	clear: 			          	Stash and optionally clear
-	delete:			          	Delete current branch
-	update/rf <all>: 	    	Pull master, Merge to current or all branches
-	pull:			            	Git Pull
-	status/s:		          	Status of branch
-	sc:			              	Get status, check if remote branch exists
-	check:			          	Check if local branch has a remote branch
-	pushup <branch>: 	    	Create remote branch and push to it
-	. <description>:	    	Add, Commit -m <des>, Push (If remote exists)
-	remote:			          	Open remote branch in default browser
-	log:			            	Log commits in current branch
-	compop:			          	Delete last commit on current branch
-	clone:		          		Git Clone --> Create repo keys and cmds
-	repo:		              	Display repo cmds and directory
-	run:		              	Start assigned repo run cmd
-	add:		              	Assign a keyword to current directory and add repo cmds
-	list:		              	List all repo keys
-	repo del [key]:		     	Delete repo keys and associated cmds
+Commands:
+[BLANK]:			List branches
+[1, 2, 3]:			Checkout branch from list
+new/n <branch>:			checkout master, pull origin master, create new branch
+rename/rn <branch>:		Rename local branch
+clear: 				Stash and optionally clear
+delete:			 	Delete current branch
+update/rf <all>: 		checkout master, pull origin master, merge to current or all branches
+pull:				git pull
+status/s:			status of branch
+sc:				git status, check if remote branch exists
+check:				check if local branch has a remote branch
+pushup: 			create remote branch and push to it
+. <description>:		add, commit -m <des>, push (If remote exists)
+remote:				open remote branch in default browser
+log:				log commits in current branch
+compop:				delete last commit on current branch
+clone:				git clone --> create repo keys and cmds
+repo:				display repo cmds and directory
+run:				start assigned repo run cmd
+add:				assign a keyword to current directory and add repo cmds
+list:				list all repo keys and their cmds
+repo del [key]:			delete repo keys and associated cmds
