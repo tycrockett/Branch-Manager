@@ -503,6 +503,9 @@ repo () {
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			if [[ $curdir == ${_bm_dir[idx]} ]]; then
 				doneit='t'
+				echo
+				echo $remoteDir
+				echo
 				printf "\e[32m${_bm_repos[idx]}\e[38m --> \e[37m${_bm_dir[idx]}\n"
 				printf "\e[34m"
 				printf "  run: \e[33m${_bm_run[idx]}\e[34m\n"
