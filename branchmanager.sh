@@ -22,7 +22,6 @@ bm () {
 
 	if [[ $1 == 'list' ]]; then used=true; repo list; fi
 	if [[ $1 == 'add' ]]; then used=true; repo add; fi
-	if [[ $1 == 'repo' ]]; then used=true; repo "$2" "$3"; fi
 	if [[ $1 == 'edit' ]] && [[ -n $2 ]]; then
 	  used=true
 		repo edit $2
@@ -251,7 +250,8 @@ bm () {
 				fi
 			done
 		fi
-
+		
+		if [[ $1 == 'repo' ]]; then used=true; repo "$2" "$3"; fi
 		if [[ $1 == 'help' ]]; then used=true; fi
 		if [[ $1 == 'run' ]]; then used=true; repo run; fi
 		if [[ $1 == 'altrun' ]]; then used=true; repo altrun; fi
@@ -500,6 +500,7 @@ repo () {
 
 	if [[ -z $1 ]]; then
 		doneit='f'
+		
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			if [[ $curdir == ${_bm_dir[idx]} ]]; then
 				doneit='t'
