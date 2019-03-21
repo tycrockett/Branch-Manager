@@ -47,7 +47,7 @@ bm () {
 				echo
 				printf "\e[31mCouldn't switch branches\e[37m\n"
 				echo "Commit your changes or"
-				echo "Use <bm clear> to clear all changes and try again"
+				printf "Use \e[35mbm clear\e[37m to clear all changes and try again\n"
 				bm s
 			fi
 			used=true
@@ -64,7 +64,7 @@ bm () {
 				echo
 				printf "\e[31mCouldn't create new branch\e[37m\n"
 				echo "Commit your changes or"
-				echo "Use <bm clear> to clear all changes and try again"
+				printf "Use \e[35mbm clear\e[37m to clear all changes and try again\n"
 				bm s
 			fi
 			used=true
@@ -76,7 +76,7 @@ bm () {
 		fi
 		
 		if [[ $1 == 'clear' ]]; then
-			if [[ $2 == '-a' ]]; then
+			if [[ $2 == '-f' ]]; then
 				git add .
 			fi
 			used=true
@@ -85,6 +85,13 @@ bm () {
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
 				git stash clear
+			fi
+			status=$(git status)
+			fixed=${status: -37}
+			if [[ $fixed != "nothing to commit, working tree clean" ]]; then
+				echo
+				printf "\e[31mCouldn't clear entire stash\e[37m\n"
+				printf "Use \e[35mbm clear -f\e[37m to force bm clear\n"
 			fi
 		fi
 
@@ -108,7 +115,7 @@ bm () {
 				echo
 				printf "\e[31mCouldn't delete branch\e[37m\n"
 				echo "Commit your changes or"
-				echo "Use <bm clear> to clear all changes and try again"
+				printf "Use \e[35mbm clear\e[37m to clear all changes and try again\n"
 				bm s
 			fi
 		fi
