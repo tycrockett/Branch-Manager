@@ -324,7 +324,7 @@ if [[ $1 == 'help' ]]; then
 	echo "remote:				open remote branch in default browser"
 	echo "log:				log commits in current branch"
 	echo "compop:				delete last commit on current branch"
-	echo "clone:				git clone --> create repo keys and cmds"
+	echo "clone:				git clone --> optionally create repo keys and cmds"
 	echo "repo:				display repo cmds and directory"
 	echo "run:				start assigned repo run cmd"
 	echo "add:				assign a keyword to current directory and add repo cmds"
@@ -480,12 +480,12 @@ repo () {
 				echo Leave blank to keep current value
 				echo Type ! to indicate an empty value
 				printf "\e[37mDirectory: ${_bm_dir[idx]}\n"
-				_repo_edit "Key Name (${_bm_repos[idx]}): " "repos" "${_bm_repos[idx]}" "$sel" true; sel=`expr $sel + 1`
+				printf "Key Name: ${_bm_repos[idx]}\n"
+				sel=`expr $sel + 2`
 				_repo_edit "run Command (${_bm_run[idx]}): " "run" "${_bm_run[idx]}" "$sel" false
 				_repo_edit "altrun Command (${_bm_altrun[idx]}): " "altrun" "${_bm_altrun[idx]}" "$sel" false
 				_repo_edit "build Command (${_bm_build[idx]}): " "build" "${_bm_build[idx]}" "$sel" false
 				_repo_edit "altbuild Command (${_bm_altbuild[idx]}): " "altbuild" "${_bm_altbuild[idx]}" "$sel" false
-
 				break
 			fi
 		done
