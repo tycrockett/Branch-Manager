@@ -270,7 +270,8 @@ bm () {
 		if [[ $1 == 'log' ]]; then
 			used=true
 			if [[ $readallbm == true ]]; then printf "\e[30m	git log master..$currentBranch --no-decorate\e[37m\n"; fi;
-			git log master..$currentBranch --no-decorate
+			# git log master..$currentBranch --no-decorate
+			git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 		fi
 
 		if [[ $1 == 'rb-clone' ]]; then
