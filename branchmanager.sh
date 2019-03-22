@@ -294,6 +294,9 @@ else
 			printf "\e[33m"
 			git clone $2
 			cd $tmpRepo
+			echo
+			echo $(pwd)
+			echo
 			printf "\e[36m"
 			printf "\e[32mWould you like to add a repo key? \e[37m"
 			read -r -p '' response
