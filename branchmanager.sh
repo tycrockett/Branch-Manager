@@ -505,7 +505,7 @@ repo () {
 		sel=$(awk -v line="#"$2 '$0 == line {print NR}' ~/Branch-Manager/repos.bmx)
 		echo $sel
 		bln=$(_repo_getItemsLength)
-		bln=`expr $bln - 1`
+		# bln=`expr $bln - 1`
 		for ((idx=0; idx<bln; ++idx)); do
 			apnd ~/Branch-Manager/repos.bmx $sel c ''
 		done
