@@ -71,7 +71,16 @@ bm () {
 		fi
 
 		if [[ $1 == 'rename' ]] || [[ $1 == 'rn' ]] ; then
+			checkit=$(git ls-remote $remoteDir $currentBranch)
 			git branch -m $2
+			if [[ -n $checkit ]]; then
+				printf "Rename remote branch? "
+				read -r -p '' response
+				if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+					git push origin :$currentBranch $2
+					git push origin -u $2
+				fi
+			fi
 			used=true
 		fi
 		
