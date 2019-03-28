@@ -29,5 +29,3 @@ run:				start assigned repo run cmd
 add:				assign a keyword to current directory and add repo cmds
 list:				list all repo keys and their cmds
 repo del [key]:			delete repo keys and associated cmds
-
-Help
