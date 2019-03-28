@@ -28,6 +28,12 @@ bm () {
 		repo edit $2
 	fi
 
+	if [[ $1 == 'repo' ]]; then used=true; repo "$2" "$3"; fi
+	if [[ $1 == 'run' ]]; then used=true; repo run; fi
+	if [[ $1 == 'altrun' ]]; then used=true; repo altrun; fi
+	if [[ $1 == 'build' ]]; then used=true; repo build; fi
+	if [[ $1 == 'altbuild' ]]; then used=true; repo altbuild; fi
+
 	if [ -d .git ] && [[ $used == false ]]; then
 		curdir=$(pwd)
 		currentBranch=$(git symbolic-ref --short -q HEAD)
@@ -298,12 +304,7 @@ bm () {
 			done
 		fi
 		
-		if [[ $1 == 'repo' ]]; then used=true; repo "$2" "$3"; fi
 		if [[ $1 == 'help' ]]; then used=true; fi
-		if [[ $1 == 'run' ]]; then used=true; repo run; fi
-		if [[ $1 == 'altrun' ]]; then used=true; repo altrun; fi
-		if [[ $1 == 'build' ]]; then used=true; repo build; fi
-		if [[ $1 == 'altbuild' ]]; then used=true; repo altbuild; fi
 
 else
 
