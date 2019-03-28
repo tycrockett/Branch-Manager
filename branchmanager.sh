@@ -275,6 +275,14 @@ bm () {
 			fi
 		fi
 
+		if [[ $1 == 'tum' ]]; then
+			# ↓
+			used=true
+			tmp=$(git rev-list --count origin/master...master)
+			echo $tmp
+
+		fi
+
 		if [[ $1 == 'remote' ]]; then
 			used=true
 			tmp="https://github.$(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
