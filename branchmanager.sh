@@ -33,8 +33,9 @@ bm () {
 	if [[ $1 == 'altrun' ]]; then used=true; repo altrun; fi
 	if [[ $1 == 'build' ]]; then used=true; repo build; fi
 	if [[ $1 == 'altbuild' ]]; then used=true; repo altbuild; fi
-
-	if [ -d .git ] && [[ $used == false ]]; then
+	
+	gitterCheck=$(git rev-parse --git-dir 2> /dev/null)
+	if [ $gitterCheck ] && [[ $used == false ]]; then
 		curdir=$(pwd)
 		currentBranch=$(git symbolic-ref --short -q HEAD)
 		remoteDir=$(git config remote.origin.url)
