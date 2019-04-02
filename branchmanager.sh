@@ -244,20 +244,28 @@ bm () {
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
-				git diff master...$currentBranch --stat
+				tmp=$(git rev-parse --short HEAD)
+				printf "\e[35mCommit Hash: $tmp\e[37m\n"
+				if [[ $2 == 'd' ]]; then 
+					git diff master...$currentBranch --stat
+				else
+					git diff master...$currentBranch --stat | tail -n1
+				fi
+				if [[ $2 == 'log' ]]; then echo; bm log; fi;
 			else
-				if [[ $readallbm == true ]]; then printf "\e[30m	git status\e[37m\n"; fi;
-				printf "\e[35m__________________________________________________________\n\n"
-				printf "\e[35mCHANGES\e[37m\n"
+				if [[ $readallbm == true ]]; then echo; printf "\e[30m	git status\e[37m\n"; fi;
+				printf "\e[34mCHANGES\e[37m\n"
+				printf "\e[34m---------------------------------------------------\e[37m\n"
 				git diff --stat
-				echo
 				tmp=$(git ls-files . --exclude-standard --others)
 				if [[ -n $tmp ]]; then
 					echo
-					printf "\e[35mUNTRACKED\e[37m\n" 
-					printf "$tmp\n\n"
+					printf "\e[34mUNTRACKED\e[37m\n" 
+					printf "$tmp\n"
 				fi
-				printf "\e[35m__________________________________________________________\e[37m\n"
+				echo
+				# printf "\e[35m----------------------------------------------------------\e[37m\n"
+				printf "Use \e[34mbm . <des>\e[37m to Add/Commit/Push\n\n"
 			fi
 			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
 				if [[ $readallbm == true ]]; then printf "\e[30m	bm check\e[37m\n"; fi;
@@ -295,9 +303,11 @@ bm () {
 
 		if [[ $1 == 'log' ]]; then
 			used=true
+			if [[ $2 == '-t' ]]; then timeTmp="%n%Cgreen%cr%Creset"; fi;
 			if [[ $readallbm == true ]]; then printf "\e[30m	git log master..$currentBranch --no-decorate\e[37m\n"; fi;
 			# git log master..$currentBranch --no-decorate
-			git log master..$currentBranch --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+			# %n  %Cgreen%cr%Creset
+			git log master..$currentBranch --graph --pretty=format:"%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset" --abbrev-commit --date=relative
 		fi
 
 		if [[ $1 == 'rb-clone' ]]; then
@@ -372,7 +382,7 @@ if [[ $1 == 'help' ]]; then
 	echo "delete:			 	Delete current branch"
 	echo "update/rf <all>: 		checkout master, pull origin master, merge to current or all branches"
 	echo "pull:				git pull"
-	echo "status/s:			status of branch"
+	echo "status/s <log> <d>:		status of branch"
 	echo "sc:				git status, check if remote branch exists"
 	echo "check:				check if local branch has a remote branch"
 	echo "pushup: 			create remote branch and push to it"
@@ -418,7 +428,7 @@ bm__changebranch () {
 			if [[ $branch == $current ]]; then
 				color='\e[32m'
 				#colorUpdate='\e[33m'
-				selected=' *'
+				selected='☆ '
 			fi
 			printf " $color$selected$ll. $colorUpdate$branch \n"
 		fi
