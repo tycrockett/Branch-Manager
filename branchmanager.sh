@@ -244,10 +244,20 @@ bm () {
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
-				printf "\e[97m$fixed\e[31m\n"
+				git diff master...$currentBranch --stat
 			else
 				if [[ $readallbm == true ]]; then printf "\e[30m	git status\e[37m\n"; fi;
-				git status
+				printf "\e[35m__________________________________________________________\n\n"
+				printf "\e[35mCHANGES\e[37m\n"
+				git diff --stat
+				echo
+				tmp=$(git ls-files . --exclude-standard --others)
+				if [[ -n $tmp ]]; then
+					echo
+					printf "\e[35mUNTRACKED\e[37m\n" 
+					printf "$tmp\n\n"
+				fi
+				printf "\e[35m__________________________________________________________\e[37m\n"
 			fi
 			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
 				if [[ $readallbm == true ]]; then printf "\e[30m	bm check\e[37m\n"; fi;
