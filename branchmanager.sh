@@ -158,13 +158,17 @@ bm () {
 		fi
 
 		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
+			echo
 			if [[ $currentBranch != 'master' ]]; then
 				_runCMD "git checkout master" true "\e[37m"
+				echo
 			fi
 			_runCMD "git pull origin master" true "\e[33m"
+			echo
 			if [[ -z $2 ]] && [[ $currentBranch != 'master' ]]; then
-				_runCMD "git checkout $currentBranch" true "\e[32m"
+				_runCMD "git checkout $currentBranch" true "\e[37m"
 				_runCMD "git merge master" true "\e[32m"
+				echo
 			fi
 
 			if [[ $2 == 'all' ]]; then
