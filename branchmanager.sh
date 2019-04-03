@@ -51,7 +51,7 @@ bm () {
 				bm__changebranch $1
 				bm
 			else
-				clear
+				clearIt
 				echo
 				printf "\e[31mCouldn't switch branches\e[37m\n"
 				echo "Commit your changes or"
@@ -62,7 +62,7 @@ bm () {
 		fi
 
 		if [[ $1 == 'new' ]] || [[ $1 == 'n' ]]; then
-			clear
+			clearIt
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
@@ -103,14 +103,14 @@ bm () {
 		
 		if [[ $1 == 'clear' ]]; then
 			if [[ $2 == '-f' ]]; then
-				git add .
+				_runCMD "git add ." true
 			fi
 			used=true
 			git stash
 			printf "\e[31mPermanetly clear stash on \e[32m$currentBranch\e[31m? \e[37m"
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-				git stash clear
+				_runCMD "git stash clear" true
 			fi
 			status=$(git status)
 			fixed=${status: -37}
@@ -122,16 +122,16 @@ bm () {
 		fi
 
 		if [[ $1 == 'delete' ]]; then
-			clear
+			clearIt
 			used=true
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
-				git status
+				bm s
 				printf "\e[31mPermanetly delete \e[32m$currentBranch\e[31m? \e[37m"
 				read -r -p '' response
 				if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-					clear
+					clearIt
 					bm__delbranch $2
 					bm
 				else
@@ -148,7 +148,7 @@ bm () {
 
 		if [[ $1 == 'compop' ]]; then
 			used=true
-			clear
+			clearIt
 			printf "\e[31mPermanetly delete last commit on \e[32m$currentBranch\e[31m? \e[37m"
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -189,7 +189,6 @@ bm () {
 		fi
 
 		if [[ $1 == 'pushup' ]]; then
-			if [[ $readallbm == true ]]; then printf "\e[30m	git push --set-upstream origin $currentBranch\e[37m\n"; fi;
 			_runCMD "git push --set-upstream origin $currentBranch" true
 			bm remote
 			used=true
@@ -200,25 +199,20 @@ bm () {
 			if [[ $currentBranch != 'master' ]] || [[ $3 == '-f' ]]; then
 
 				if [[ -z $2 ]]; then
-					clear
-					if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
-					git add .
-					if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m ''\e[37m\n"; fi;
-					git commit -m ""
+					clearIt
+					_runCMD "git add ." true
+					_runCMD "git commit -m ''" true
 				fi
 				if [[ -n $2 ]]; then
-					clear
-					if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
-					git add .
-					if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m '$2'\e[37m\n"; fi;
-					git commit -m "$2"
+					clearIt
+					_runCMD "git add ." true
+					_runCMD "git commit -m '$2'" true
 					checkit=$(git ls-remote $remoteDir $currentBranch) 
 					if [[ -n $checkit ]]; then
-						if [[ $readallbm == true ]]; then printf "\e[30m	git push\e[37m\n"; fi;
-						git push
+						_runCMD "git push" true
 					fi
 				fi
-				if [[ $3 != '-d' ]]; then clear; fi
+				if [[ $3 != '-d' ]]; then clearIt; fi
 				bm s
 				used=true
 			fi
@@ -236,11 +230,10 @@ bm () {
 							SHOWDETAILS=true
 							SHOWLOGS=true 
 						;;
-						\?) git diff master...$currentBranch --stat | tail -n1 ;;
+						\?) ;;
 					esac
 				fi;
 			done
-			# bm
 			echo
 			status=$(git status)
 			fixed=${status: -37}
@@ -248,10 +241,10 @@ bm () {
 				tmp=$(git rev-parse --short HEAD)
 				printf "\e[35mCommit Hash: $tmp\e[37m\n"
 			else
-				if [[ $readallbm == true ]]; then echo; printf "\e[30m	git status\e[37m\n"; fi;
 				printf "\e[34mCHANGES\e[37m\n"
 				printf "\e[34m---------------------------------------------------\e[37m\n"
-				git diff --stat
+				_runCMD "git diff --stat" true
+				_runCMD "git ls-files . --exclude-standard --others" false
 				tmp=$(git ls-files . --exclude-standard --others)
 				if [[ -n $tmp ]]; then
 					echo
@@ -263,7 +256,6 @@ bm () {
 			fi
 
 			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
-				if [[ $readallbm == true ]]; then printf "\e[30m	bm check\e[37m\n"; fi;
 				bm check
 			fi
 			if [[ $2 == 'all' ]]; then
@@ -282,7 +274,7 @@ bm () {
 
 		if [[ $1 == 'check' ]]; then
 			used=true
-			if [[ $readallbm == true ]]; then printf "\e[30m	git ls-remote $remoteDir $currentBranch\e[37m\n"; fi;
+			_runCMD "git ls-remote $remoteDir $currentBranch" false
 			checkit=$(git ls-remote $remoteDir $currentBranch)
 			if [[ -z $checkit ]]; then
 				echo
@@ -298,8 +290,7 @@ bm () {
 		if [[ $1 == 'remote' ]]; then
 			used=true
 			tmp="https://github.$(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
-			if [[ $readallbm == true ]]; then printf "\e[30m	open '$tmp/tree/$currentBranch'\e[37m\n"; fi;
-			open "$tmp/tree/$currentBranch"
+			_runCMD "open $tmp/tree/$currentBranch" true
 		fi
 
 		if [[ $1 == 'log' ]]; then
@@ -344,9 +335,8 @@ else
 			tmpRepo=${tmpRepo%.*}
 			echo $tmpRepo
 			printf "\e[33m"
-			if [[ $readallbm == true ]]; then printf "\e[30m	git clone $2\e[37m\n"; fi;
-			git clone $2
-			cd $tmpRepo
+			_runCMD "git clone $2" true
+			_runCMD "cd $tmpRepo" true
 			echo
 			printf "\e[37m$(pwd)\n"
 			echo
@@ -418,6 +408,10 @@ _runCMD() {
 	if [[ $2 == true ]]; then $1; fi;
 }
 
+clearIt() {
+	if [[ $readallbm == false ]]; then clear; fi;
+}
+
 bm__changebranch () {
 	ll=0
 	br=()
@@ -452,35 +446,28 @@ bm__changebranch () {
 		echo $remoteDir
 	else
 		opt=`expr $1 - 1`
-		if [[ $readallbm == true ]]; then printf "\e[30m	git checkout ${br[@]:$opt:1}\e[37m\n"; fi;
-		git checkout ${br[@]:$opt:1}
+		_runCMD "git checkout ${br[@]:$opt:1}" true
 	fi
 }
 
 bm__newbranch () {
 	branch=$(git symbolic-ref --short -q HEAD)
 	if [[ $branch != 'master' ]]; then
-		if [[ $readallbm == true ]]; then printf "\e[30m	git checkout master\e[37m\n"; fi;
-		git checkout  master
+		_runCMD "git checkout  master" true
 	else
 		echo In master
 	fi
-	if [[ $readallbm == true ]]; then printf "\e[30m	git pull origin master\e[37m\n"; fi;
-	git pull origin master
-	if [[ $readallbm == true ]]; then printf "\e[30m	git branch $1\e[37m\n"; fi;
-	git branch $1
-	if [[ $readallbm == true ]]; then printf "\e[30m	git checkout $1\e[37m\n"; fi;
-	git checkout $1
+	_runCMD "git pull origin master" true
+	_runCMD "git branch $1" true
+	_runCMD "git checkout $1" true
 }
 
 bm__delbranch () {
 	branch=$(git symbolic-ref --short -q HEAD)
 	if [[ $branch != "master" ]]
 		then
-			if [[ $readallbm == true ]]; then printf "\e[30m	git checkout master\e[37m\n"; fi;
-			git checkout master
-			if [[ $readallbm == true ]]; then printf "\e[30m	git branch -D $branch\e[37m\n"; fi;
-			git branch -D $branch
+			_runCMD "git checkout master" true
+			_runCMD "git branch -D $branch" true
 	fi
 	if [[ $branch == "master" ]]
 		then
