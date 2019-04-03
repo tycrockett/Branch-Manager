@@ -749,4 +749,4 @@ _repo_getAddLine () {
 }
 
 _repo_create
-readallbm=true
+readallbm=false
