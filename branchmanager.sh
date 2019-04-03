@@ -152,106 +152,101 @@ bm () {
 			printf "\e[31mPermanetly delete last commit on \e[32m$currentBranch\e[31m? \e[37m"
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-				if [[ $readallbm == true ]]; then printf "\e[30m	git reset --hard HEAD^\e[33m\n"; fi;
-				git reset --hard HEAD^
+				_runCMD "git reset --hard HEAD^" true
 				bm log
 			fi
 		fi
 
 		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
-			printf "\e[33m"
 			if [[ $currentBranch != 'master' ]]; then
-				if [[ $readallbm == true ]]; then printf "\e[30m	git checkout master\e[33m\n"; fi;
-				git checkout master
+				_runCMD "git checkout master" true "\e[37m"
 			fi
-			if [[ $readallbm == true ]]; then printf "\e[30m	git pull origin master\e[33m\n"; fi;
-			git pull origin master
-			printf "\e[37m"
-
+			_runCMD "git pull origin master" true "\e[33m"
 			if [[ -z $2 ]] && [[ $currentBranch != 'master' ]]; then
-				if [[ $readallbm == true ]]; then printf "\e[30m	git checkout $currentBranch\e[37m\n"; fi;
-				printf "\e[32m"
-				git checkout $currentBranch
-				if [[ $readallbm == true ]]; then printf "\e[30m	git merge master\e[37m\n"; fi;
-				printf "\e[37m"
-				git merge master
+				_runCMD "git checkout $currentBranch" true "\e[32m"
+				_runCMD "git merge master" true "\e[32m"
 			fi
 
 			if [[ $2 == 'all' ]]; then
 				for branch in $(git branch | grep "[^* ]+" -Eo);
 				do
 					if [[ $branch != 'master' ]]; then
-						if [[ $readallbm == true ]]; then printf "\e[30m	git checkout $branch\e[37m\n"; fi;
-						printf "\e[32m"
-						git checkout $branch
-						if [[ $readallbm == true ]]; then printf "\e[30m	git merge master\e[37m\n"; fi;
-						printf "\e[37m"
-						git merge master
+						_runCMD "git checkout $branch" true
+						_runCMD "git merge master" true
 					fi
 					br+=($branch)
 				done
 				if [[ $branch != $currentBranch ]]; then 
 					echo
-					if [[ $readallbm == true ]]; then printf "\e[30m	git checkout $currentBranch \e[37m\n"; fi;
-					printf "\e[34m"
-					git checkout $currentBranch 
+					_runCMD "git checkout $currentBranch " true
 				fi
 			fi
 			used=true
 		fi
 
 		if [[ $1 == 'pull' ]]; then
-			if [[ $readallbm == true ]]; then printf "\e[30m	git pull\e[37m\n"; fi;
-			git pull
+			_runCMD "git pull" true
 		fi
 
 		if [[ $1 == 'pushup' ]]; then
 			if [[ $readallbm == true ]]; then printf "\e[30m	git push --set-upstream origin $currentBranch\e[37m\n"; fi;
-			git push --set-upstream origin $currentBranch
+			_runCMD "git push --set-upstream origin $currentBranch" true
 			bm remote
 			used=true
 		fi
 
 		if [[ $1 == '.' ]]; then
 
-			if [[ -z $2 ]]; then
-				clear
-				if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
-				git add .
-				if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m ''\e[37m\n"; fi;
-				git commit -m ""
-			fi
-			if [[ -n $2 ]]; then
-				clear
-				if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
-				git add .
-				if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m '$2'\e[37m\n"; fi;
-				git commit -m "$2"
-				checkit=$(git ls-remote $remoteDir $currentBranch) 
-				if [[ -n $checkit ]]; then
-					if [[ $readallbm == true ]]; then printf "\e[30m	git push\e[37m\n"; fi;
-					git push
+			if [[ $currentBranch != 'master' ]] || [[ $3 == '-f' ]]; then
+
+				if [[ -z $2 ]]; then
+					clear
+					if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
+					git add .
+					if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m ''\e[37m\n"; fi;
+					git commit -m ""
 				fi
+				if [[ -n $2 ]]; then
+					clear
+					if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
+					git add .
+					if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m '$2'\e[37m\n"; fi;
+					git commit -m "$2"
+					checkit=$(git ls-remote $remoteDir $currentBranch) 
+					if [[ -n $checkit ]]; then
+						if [[ $readallbm == true ]]; then printf "\e[30m	git push\e[37m\n"; fi;
+						git push
+					fi
+				fi
+				if [[ $3 != '-d' ]]; then clear; fi
+				bm s
+				used=true
 			fi
-			if [[ $3 != '-d' ]]; then clear; fi
-			bm s
-			used=true
 		fi
 
 		if [[ $1 == 'status' ]] || [[ $1 == 's' ]] || [[ $1 == 'sc' ]]; then
-			bm
+			SHOWDETAILS=false
+			SHOWLOGS=false
+			for arg; do
+				if [[ $arg != $1 ]]; then
+					case $arg in
+						-d) SHOWDETAILS=true ;;
+						-l) SHOWLOGS=true ;;
+						-dl) 
+							SHOWDETAILS=true
+							SHOWLOGS=true 
+						;;
+						\?) git diff master...$currentBranch --stat | tail -n1 ;;
+					esac
+				fi;
+			done
+			# bm
 			echo
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
 				tmp=$(git rev-parse --short HEAD)
 				printf "\e[35mCommit Hash: $tmp\e[37m\n"
-				if [[ $2 == 'd' ]]; then 
-					git diff master...$currentBranch --stat
-				else
-					git diff master...$currentBranch --stat | tail -n1
-				fi
-				if [[ $2 == 'log' ]]; then echo; bm log; fi;
 			else
 				if [[ $readallbm == true ]]; then echo; printf "\e[30m	git status\e[37m\n"; fi;
 				printf "\e[34mCHANGES\e[37m\n"
@@ -264,9 +259,9 @@ bm () {
 					printf "$tmp\n"
 				fi
 				echo
-				# printf "\e[35m----------------------------------------------------------\e[37m\n"
 				printf "Use \e[34mbm . <des>\e[37m to Add/Commit/Push\n\n"
 			fi
+
 			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
 				if [[ $readallbm == true ]]; then printf "\e[30m	bm check\e[37m\n"; fi;
 				bm check
@@ -277,6 +272,12 @@ bm () {
 				bm log
 			fi
 			used=true
+			if [[ $SHOWDETAILS == true ]]; then 
+				git diff master...$currentBranch --stat
+			else
+				git diff master...$currentBranch --stat | tail -n1
+			fi
+			if [[ $SHOWLOGS == true ]]; then echo; bm log; fi;
 		fi
 
 		if [[ $1 == 'check' ]]; then
@@ -304,10 +305,8 @@ bm () {
 		if [[ $1 == 'log' ]]; then
 			used=true
 			if [[ $2 == '-t' ]]; then timeTmp="%n%Cgreen%cr%Creset"; fi;
-			if [[ $readallbm == true ]]; then printf "\e[30m	git log master..$currentBranch --no-decorate\e[37m\n"; fi;
-			# git log master..$currentBranch --no-decorate
-			# %n  %Cgreen%cr%Creset
-			git log master..$currentBranch --graph --pretty=format:"%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset" --abbrev-commit --date=relative
+			_runCMD "git log master..$currentBranch --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative" false
+			git log master..$currentBranch --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
 		fi
 
 		if [[ $1 == 'rb-clone' ]]; then
@@ -406,6 +405,17 @@ if [[ $test_branch_manager == true ]]; then
 		echo "!Invalid!"
 	fi
 fi
+}
+
+_runCMD() {
+	color=$3
+	if [[ -z $3 ]]; then color="\e[37m"; fi;
+	if [[ $readallbm == true ]]; then 
+		printf "\e[30m"
+		echo "	$1";
+	fi;
+	printf "$color"
+	if [[ $2 == true ]]; then $1; fi;
 }
 
 bm__changebranch () {
@@ -752,4 +762,4 @@ _repo_getAddLine () {
 }
 
 _repo_create
-readallbm=false
+readallbm=true
