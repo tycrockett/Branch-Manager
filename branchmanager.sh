@@ -201,21 +201,16 @@ bm () {
 
 				if [[ -z $2 ]]; then
 					clear
-					if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
-					git add .
-					if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m ''\e[37m\n"; fi;
-					git commit -m ""
+					_runCMD "git add ." true
+					_runCMD "git commit -m ''" true
 				fi
 				if [[ -n $2 ]]; then
 					clear
-					if [[ $readallbm == true ]]; then printf "\e[30m	git add .\e[37m\n"; fi;
-					git add .
-					if [[ $readallbm == true ]]; then printf "\e[30m	git commit -m '$2'\e[37m\n"; fi;
-					git commit -m "$2"
+					_runCMD "git add ." true
+					_runCMD "git commit -m '$2'" true
 					checkit=$(git ls-remote $remoteDir $currentBranch) 
 					if [[ -n $checkit ]]; then
-						if [[ $readallbm == true ]]; then printf "\e[30m	git push\e[37m\n"; fi;
-						git push
+						_runCMD "git push" true
 					fi
 				fi
 				if [[ $3 != '-d' ]]; then clear; fi
