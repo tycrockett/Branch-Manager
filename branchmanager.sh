@@ -244,7 +244,14 @@ bm () {
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
 				tmp=$(git rev-parse --short HEAD)
 				printf "\e[35mCommit Hash: $tmp\e[37m\n"
+				if [[ $SHOWDETAILS == true ]]; then 
+					git diff master...$currentBranch --stat
+				else
+					git diff master...$currentBranch --stat | tail -n1
+				fi
 			else
+				git diff master...$currentBranch --stat | tail -n1
+				echo
 				printf "\e[34mCHANGES\e[37m\n"
 				printf "\e[34m---------------------------------------------------\e[37m\n"
 				_runCMD "git diff --stat" true
@@ -268,11 +275,6 @@ bm () {
 				bm log
 			fi
 			used=true
-			if [[ $SHOWDETAILS == true ]]; then 
-				git diff master...$currentBranch --stat
-			else
-				git diff master...$currentBranch --stat | tail -n1
-			fi
 			if [[ $SHOWLOGS == true ]]; then echo; bm log; fi;
 		fi
 
