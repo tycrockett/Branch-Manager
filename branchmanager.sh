@@ -234,7 +234,6 @@ bm () {
 					esac
 				fi;
 			done
-			# bm
 			echo
 			status=$(git status)
 			fixed=${status: -37}
@@ -454,27 +453,21 @@ bm__changebranch () {
 bm__newbranch () {
 	branch=$(git symbolic-ref --short -q HEAD)
 	if [[ $branch != 'master' ]]; then
-		if [[ $readallbm == true ]]; then printf "\e[30m	git checkout master\e[37m\n"; fi;
-		git checkout  master
+		_runCMD "git checkout  master" true
 	else
 		echo In master
 	fi
-	if [[ $readallbm == true ]]; then printf "\e[30m	git pull origin master\e[37m\n"; fi;
-	git pull origin master
-	if [[ $readallbm == true ]]; then printf "\e[30m	git branch $1\e[37m\n"; fi;
-	git branch $1
-	if [[ $readallbm == true ]]; then printf "\e[30m	git checkout $1\e[37m\n"; fi;
-	git checkout $1
+	_runCMD "git pull origin master" true
+	_runCMD "git branch $1" true
+	_runCMD "git checkout $1" true
 }
 
 bm__delbranch () {
 	branch=$(git symbolic-ref --short -q HEAD)
 	if [[ $branch != "master" ]]
 		then
-			if [[ $readallbm == true ]]; then printf "\e[30m	git checkout master\e[37m\n"; fi;
-			git checkout master
-			if [[ $readallbm == true ]]; then printf "\e[30m	git branch -D $branch\e[37m\n"; fi;
-			git branch -D $branch
+			_runCMD "git checkout master" true
+			_runCMD "git branch -D $branch" true
 	fi
 	if [[ $branch == "master" ]]
 		then
