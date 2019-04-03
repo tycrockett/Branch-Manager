@@ -51,7 +51,7 @@ bm () {
 				bm__changebranch $1
 				bm
 			else
-				clear
+				clearIt
 				echo
 				printf "\e[31mCouldn't switch branches\e[37m\n"
 				echo "Commit your changes or"
@@ -62,7 +62,7 @@ bm () {
 		fi
 
 		if [[ $1 == 'new' ]] || [[ $1 == 'n' ]]; then
-			clear
+			clearIt
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
@@ -122,7 +122,7 @@ bm () {
 		fi
 
 		if [[ $1 == 'delete' ]]; then
-			clear
+			clearIt
 			used=true
 			status=$(git status)
 			fixed=${status: -37}
@@ -131,7 +131,7 @@ bm () {
 				printf "\e[31mPermanetly delete \e[32m$currentBranch\e[31m? \e[37m"
 				read -r -p '' response
 				if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-					clear
+					clearIt
 					bm__delbranch $2
 					bm
 				else
@@ -148,7 +148,7 @@ bm () {
 
 		if [[ $1 == 'compop' ]]; then
 			used=true
-			clear
+			clearIt
 			printf "\e[31mPermanetly delete last commit on \e[32m$currentBranch\e[31m? \e[37m"
 			read -r -p '' response
 			if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
@@ -200,12 +200,12 @@ bm () {
 			if [[ $currentBranch != 'master' ]] || [[ $3 == '-f' ]]; then
 
 				if [[ -z $2 ]]; then
-					clear
+					clearIt
 					_runCMD "git add ." true
 					_runCMD "git commit -m ''" true
 				fi
 				if [[ -n $2 ]]; then
-					clear
+					clearIt
 					_runCMD "git add ." true
 					_runCMD "git commit -m '$2'" true
 					checkit=$(git ls-remote $remoteDir $currentBranch) 
@@ -213,7 +213,7 @@ bm () {
 						_runCMD "git push" true
 					fi
 				fi
-				if [[ $3 != '-d' ]]; then clear; fi
+				if [[ $3 != '-d' ]]; then clearIt; fi
 				bm s
 				used=true
 			fi
@@ -411,6 +411,10 @@ _runCMD() {
 	fi;
 	printf "$color"
 	if [[ $2 == true ]]; then $1; fi;
+}
+
+clearIt() {
+	if [[ $readallbm == false ]]; then clear; fi;
 }
 
 bm__changebranch () {
