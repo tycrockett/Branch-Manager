@@ -167,6 +167,7 @@ bm () {
 			echo
 			if [[ -z $2 ]] && [[ $currentBranch != 'master' ]]; then
 				_runCMD "git checkout $currentBranch" true "\e[37m"
+				echo
 				_runCMD "git merge master" true "\e[32m"
 				echo
 			fi
@@ -209,11 +210,14 @@ bm () {
 				fi
 				if [[ -n $2 ]]; then
 					clearIt
-					_runCMD "git add ." true
-					_runCMD "git commit -m '$2'" true
+					_runCMD "git add ." false
+					git add .
+					_runCMD "git commit -m '$2'" false
+					git commit -m "$2"
 					checkit=$(git ls-remote $remoteDir $currentBranch) 
 					if [[ -n $checkit ]]; then
-						_runCMD "git push" true
+						_runCMD "git push" false
+						git push
 					fi
 				fi
 				if [[ $3 != '-d' ]]; then clearIt; fi
