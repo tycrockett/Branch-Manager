@@ -305,9 +305,13 @@ bm () {
 
 		if [[ $1 == 'log' ]]; then
 			used=true
-			if [[ $2 == '-t' ]]; then timeTmp="%n%Cgreen%cr%Creset"; fi;
-			_runCMD "git log master..$currentBranch --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative" false
-			git log master..$currentBranch --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
+			tmp="..$currentBranch"
+			tmpN=5
+			if [[ -n $2 ]]; then tmpN=$2; fi;
+			if [[ $currentBranch == 'master' ]]; then tmp=''; fi;
+			echo $tmp
+			_runCMD "git log master$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative" false
+			git log -n $tmpN master$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
 		fi
 
 		if [[ $1 == 'rb-clone' ]]; then
