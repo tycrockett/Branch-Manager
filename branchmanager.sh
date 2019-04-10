@@ -309,7 +309,6 @@ bm () {
 			tmpN=5
 			if [[ -n $2 ]]; then tmpN=$2; fi;
 			if [[ $currentBranch == 'master' ]]; then tmp=''; fi;
-			echo $tmp
 			_runCMD "git log master$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative" false
 			git log -n $tmpN master$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
 		fi
