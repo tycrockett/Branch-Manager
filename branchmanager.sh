@@ -284,8 +284,11 @@ bm () {
 				printf "Use \e[34mbm . <des>\e[37m to Add/Commit/Push\n\n"
 			fi
 
-			if [[ $SHOWALLDETAILS == true ]]; then 
-				_runCMD "git diff" true
+			if [[ $SHOWALLDETAILS == true ]]; then
+				echo
+				tmp='..$currentBranch'
+				if [[ $currentBranch == 'master' ]]; then tmp=''; fi;
+				_runCMD "git diff master$tmp" true
 			fi
 
 			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
