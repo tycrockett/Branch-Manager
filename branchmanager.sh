@@ -237,11 +237,15 @@ bm () {
 		fi
 
 		if [[ $1 == 'status' ]] || [[ $1 == 's' ]] || [[ $1 == 'sc' ]]; then
+			SHOWALLDETAILS=false
 			SHOWDETAILS=false
 			SHOWLOGS=false
 			for arg; do
 				if [[ $arg != $1 ]]; then
 					case $arg in
+						-ad) 
+							SHOWALLDETAILS=true 
+							SHOWDETAILS=true;;
 						-d) SHOWDETAILS=true ;;
 						-l) SHOWLOGS=true ;;
 						-dl) 
@@ -278,6 +282,10 @@ bm () {
 				fi
 				echo
 				printf "Use \e[34mbm . <des>\e[37m to Add/Commit/Push\n\n"
+			fi
+
+			if [[ $SHOWALLDETAILS == true ]]; then 
+				_runCMD "git diff" true
 			fi
 
 			if [[ $1 == 'sc' ]] && [[ $2 != 'all' ]]; then
