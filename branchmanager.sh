@@ -156,37 +156,47 @@ bm () {
 				bm log
 			fi
 		fi
-
+		
 		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
-			echo
-			if [[ $currentBranch != 'master' ]]; then
-				_runCMD "git checkout master" true "\e[37m"
+			status=$(git status)
+			fixed=${status: -37}
+			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
 				echo
-			fi
-			_runCMD "git pull origin master" true "\e[33m"
-			echo
-			if [[ -z $2 ]] && [[ $currentBranch != 'master' ]]; then
-				_runCMD "git checkout $currentBranch" true "\e[37m"
-				echo
-				_runCMD "git merge master" true "\e[32m"
-				echo
-			fi
-
-			if [[ $2 == 'all' ]]; then
-				for branch in $(git branch | grep "[^* ]+" -Eo);
-				do
-					if [[ $branch != 'master' ]]; then
-						_runCMD "git checkout $branch" true
-						_runCMD "git merge master" true
-					fi
-					br+=($branch)
-				done
-				if [[ $branch != $currentBranch ]]; then 
+				if [[ $currentBranch != 'master' ]]; then
+					_runCMD "git checkout master" true "\e[37m"
 					echo
-					_runCMD "git checkout $currentBranch " true
 				fi
+				_runCMD "git pull origin master" true "\e[33m"
+				echo
+				if [[ -z $2 ]] && [[ $currentBranch != 'master' ]]; then
+					_runCMD "git checkout $currentBranch" true "\e[37m"
+					echo
+					_runCMD "git merge master" true "\e[32m"
+					echo
+				fi
+
+				if [[ $2 == 'all' ]]; then
+					for branch in $(git branch | grep "[^* ]+" -Eo);
+					do
+						if [[ $branch != 'master' ]]; then
+							_runCMD "git checkout $branch" true
+							_runCMD "git merge master" true
+						fi
+						br+=($branch)
+					done
+					if [[ $branch != $currentBranch ]]; then 
+						echo
+						_runCMD "git checkout $currentBranch " true
+					fi
+				fi
+				used=true
+			else
+				echo
+				printf "\e[31m"
+				echo "Your local changes would be overwritten."
+				echo "Please commit your changes or stash them before you switch branches."
+				printf "\e[37m"
 			fi
-			used=true
 		fi
 
 		if [[ $1 == 'pull' ]]; then
@@ -203,12 +213,12 @@ bm () {
 
 			if [[ $currentBranch != 'master' ]] || [[ $3 == '-f' ]]; then
 
-				if [[ -z $2 ]]; then
+				if [[ $3 == '-fix' ]]; then
 					clearIt
-					_runCMD "git add ." true
-					_runCMD "git commit -m ''" true
+					_runCMD "git commit -m '$2' --no-verify" false
+					git commit -m "$2" --no-verify
 				fi
-				if [[ -n $2 ]]; then
+				if [[ -n $2 ]] && [[ $3 != '-m' ]]; then
 					clearIt
 					_runCMD "git add ." false
 					git add .
