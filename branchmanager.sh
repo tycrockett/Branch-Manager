@@ -286,7 +286,7 @@ bm () {
 
 			if [[ $SHOWALLDETAILS == true ]]; then
 				echo
-				tmp='..$currentBranch'
+				tmp="..$currentBranch"
 				if [[ $currentBranch == 'master' ]]; then tmp=''; fi;
 				_runCMD "git diff master$tmp" true
 			fi
