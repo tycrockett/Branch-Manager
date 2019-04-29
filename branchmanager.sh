@@ -243,7 +243,7 @@ bm () {
 			for arg; do
 				if [[ $arg != $1 ]]; then
 					case $arg in
-						-ad) 
+						-a) 
 							SHOWALLDETAILS=true 
 							SHOWDETAILS=true;;
 						-d) SHOWDETAILS=true ;;
