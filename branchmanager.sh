@@ -218,6 +218,7 @@ bm () {
 					_runCMD "git commit -m '$2' --no-verify" false
 					git commit -m "$2" --no-verify
 				fi
+
 				if [[ -n $2 ]] && [[ $3 != '-m' ]]; then
 					clearIt
 					_runCMD "git add ." false
@@ -230,10 +231,17 @@ bm () {
 						git push
 					fi
 				fi
+				if [[ -z $2 ]]; then
+					git add .
+				fi
 				if [[ $3 != '-d' ]]; then clearIt; fi
 				bm s
 				used=true
 			fi
+		fi
+
+		if [[ $1 == 'commit' ]]; then
+			git commit;
 		fi
 
 		if [[ $1 == 'status' ]] || [[ $1 == 's' ]] || [[ $1 == 'sc' ]]; then
@@ -274,12 +282,14 @@ bm () {
 				printf "\e[34m---------------------------------------------------\e[37m\n"
 				_runCMD "git diff --stat" true
 				_runCMD "git ls-files . --exclude-standard --others" false
-				tmp=$(git ls-files . --exclude-standard --others)
-				if [[ -n $tmp ]]; then
-					echo
-					printf "\e[34mUNTRACKED\e[37m\n" 
-					printf "$tmp\n"
-				fi
+				tmp1=$(git status -s | egrep -c "^ ?")
+        tmp2=$(git status -s | egrep -c "^ [MARCD]")
+        if [[ $tmp1 > $tmp2 ]]; then 
+            tmp3=`expr $tmp1 - $tmp2`
+						echo
+            printf "  \e[36m$tmp3 Untracked File(s)\n\e[37m"; 
+						echo "  $(git ls-files --exclude-standard --others)"
+        fi;
 				echo
 				printf "Use \e[34mbm . <des>\e[37m to Add/Commit/Push\n\n"
 			fi
@@ -599,6 +609,7 @@ repo () {
 
 	if [[ $1 == 'list' ]]; then
 		use='t'
+		source ~/Branch-Manager/repos.bmx
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			printf "\e[32m${_bm_repos[idx]}\e[38m --> \e[37m${_bm_dir[idx]}\n"
 			printf "\e[34m"
