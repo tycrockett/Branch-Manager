@@ -610,6 +610,7 @@ repo () {
 	if [[ $1 == 'list' ]]; then
 		use='t'
 		source ~/Branch-Manager/repos.bmx
+		echo
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			printf "\e[32m${_bm_repos[idx]}\e[38m --> \e[37m${_bm_dir[idx]}\n"
 			printf "\e[34m"
