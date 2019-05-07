@@ -71,9 +71,9 @@ function prompt_command() {
 
         tmp=$(git rev-list --count origin/master...master)
         if [[ $tmp > 0 ]]; then
-            tmp1="${bold_blue}☝${white}$tmp"; 
-            if [[ "$tmp" -gt "10" ]]; then tmp1="${bold_blue}☝${yellow}$tmp";  fi;
-            if [[ "$tmp" -gt "25" ]]; then tmp1="${bold_blue}☝${red}$tmp";  fi;
+            tmp1=" ${bold_blue}☝${white}$tmp"; 
+            if [[ "$tmp" -gt "10" ]]; then tmp1=" ${bold_blue}☝${yellow}$tmp";  fi;
+            if [[ "$tmp" -gt "25" ]]; then tmp1=" ${bold_blue}☝${red}$tmp";  fi;
             tytheme_GIT_UPDATER+=$tmp1
         else 
             (git fetch origin master &>/dev/null &); 
