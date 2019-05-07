@@ -315,8 +315,8 @@ bm () {
 
 		if [[ $1 == 'check' ]]; then
 			used=true
-			_runCMD "git ls-remote $remoteDir $currentBranch" false
-			checkit=$(git ls-remote $remoteDir $currentBranch)
+			_runCMD "git branch -a | egrep 'remotes/origin/${tytheme_curBranch}$'" false
+			checkit=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
 			if [[ -z $checkit ]]; then
 				echo
 				printf "\e[34m[!] No remote branch exists\e[37m\n"
@@ -325,7 +325,7 @@ bm () {
 			else
 				printf "\e[32mRemote branch exists!\e[31m\n"
 				echo
-			fi
+			fi;
 		fi
 
 		if [[ $1 == 'remote' ]]; then
