@@ -100,6 +100,10 @@ bm () {
 			fi
 			used=true
 		fi
+
+		if [[ $1 == 'details' ]]; then
+			git diff master..HEAD -- $2
+		fi;
 		
 		if [[ $1 == 'clear' ]]; then
 			if [[ $2 == '-f' ]]; then
