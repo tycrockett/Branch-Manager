@@ -25,20 +25,12 @@ function prompt_command() {
         else
             if [[ $tytheme_curBranch == 'master' ]]; then tytheme_icon="${bold_cyan}♔"; fi;
             if [[ $tytheme_curBranch != 'master' ]]; then tytheme_icon="${bold_cyan}☉"; fi;
-            tytheme_icon="${bold_cyan}⇅"
         fi;
         
         tmp=$(git diff master$tmp --stat | tail -n1)
         if [[ -n $tmp ]]; then
             tytheme_changeDetails="\n| $tmp"
         fi
-
-        if [[ -z $tytheme_remoteCheck ]]; then
-            tytheme_icon="${bold_red}!"
-            tmp=''
-        else
-            tytheme_icon="${bold_cyan}⇅"
-        fi;
 
         tmp=$(git rev-list --count origin/master...master)
         if [[ $tmp > 0 ]]; then
