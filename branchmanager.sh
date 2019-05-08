@@ -801,7 +801,12 @@ _repo_getAddLine () {
 
 _repo_create
 readallbm=false
-direc=$(pwd)
-cd ~/Branch-Manager
-git pull origin master --quiet
-cd $direc
+
+branchManagerUpdater=$(echo $(myip) | cut -d ' ' -f 5-)
+
+if [[ -n branchManagerUpdater ]]; then
+	direc=$(pwd)
+	cd ~/Branch-Manager
+	git pull origin master --quiet
+	cd $direc
+fi
