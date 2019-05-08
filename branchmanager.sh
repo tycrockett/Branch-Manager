@@ -801,3 +801,7 @@ _repo_getAddLine () {
 
 _repo_create
 readallbm=false
+direc=$(pwd)
+cd ~/Branch-Manager
+git pull origin master --quiet
+cd $direc
