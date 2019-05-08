@@ -13,6 +13,7 @@ bm () {
 	fi
 
 	if [[ $used == false ]] && [[ -n $1 ]]; then
+		source ~/Branch-Manager/repos.bmx
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
 			if [[ $1 == ${_bm_repos[idx]} ]]; then
 				repo $1 $2 $3 $4
