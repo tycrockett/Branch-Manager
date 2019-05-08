@@ -286,13 +286,12 @@ bm () {
 				printf "\e[34m---------------------------------------------------\e[37m\n"
 				_runCMD "git diff --stat" true
 				_runCMD "git ls-files . --exclude-standard --others" false
-				tmp1=$(git status -s | egrep -c "^ ?")
-        tmp2=$(git status -s | egrep -c "^ [MARCD]")
-        if [[ $tmp1 > $tmp2 ]]; then 
-            tmp3=`expr $tmp1 - $tmp2`
+				tmp=$(git ls-files --exclude-standard --others | wc -l)
+				tmp="$(echo -e "${tmp}" | tr -d '[:space:]')"
+				if [[ $tmp > 0 ]]; then
 						echo
-            printf "  \e[36m$tmp3 Untracked File(s)\n\e[37m"; 
-						echo "  $(git ls-files --exclude-standard --others)"
+            printf "\e[36m$tmp Untracked File(s)\n\e[37m"; 
+						echo "$(git ls-files --exclude-standard --others)"
         fi;
 				echo
 				printf "Use \e[34mbm . <des>\e[37m to Add/Commit/Push\n\n"

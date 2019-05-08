@@ -17,7 +17,7 @@ function prompt_command() {
         tytheme_curBranch=$(git symbolic-ref --short -q HEAD)
         tmp=''
         if [[ $tytheme_curBranch != 'master' ]]; then tmp="...$tytheme_curBranch"; fi;
-        
+
         tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
         if [[ -z $tytheme_remoteCheck ]]; then
             tytheme_icon="${bold_red}!"
@@ -33,7 +33,6 @@ function prompt_command() {
             tytheme_changeDetails="\n| $tmp"
         fi
 
-        
         if [[ -z $tytheme_remoteCheck ]]; then
             tytheme_icon="${bold_red}!"
             tmp=''
@@ -53,15 +52,23 @@ function prompt_command() {
         if [[ $tmp > 0 ]]; then
             tmp=$(git diff --shortstat | awk '{files+=$1; inserted+=$4; deleted+=$6;} 
                 END {
-                    if (files > 0) { print "|", files, "\b:", inserted + deleted, "|"}
-                    if (files == 0) { print "|U|" }
+                    if (files > 0) { print "|", files, ":", inserted + deleted, "|"}
                 }')
+            tmp1=$(git status -s | egrep -c "^ ?")
+            tmp2=$(git status -s | egrep -c "^ [MARCD]")
+            if [[ $tmp1 > $tmp2 ]]; then 
+                tmp3=`expr $tmp1 - $tmp2`
+                # tmp="|U:$tmp3$tmp"
+                char=$(git ls-files --exclude-standard --others | wc -l)
+                tmp="|U:$char$tmp"
+            fi
+            tmp="$(echo -e "${tmp}" | tr -d '[:space:]')"
             tytheme_GIT_UPDATER+=" ${bold_yellow}$tmp"
             # ⚡
         fi
 
 	fi;
-    PS1="\n${white}\W $tytheme_icon ${bold_green}$tytheme_curBranch$tytheme_remoteBRANCH$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${reset_color}"
+    PS1="\n${white}\W $tytheme_icon${bold_green} $tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${reset_color}"
 }
 
 safe_append_prompt_command prompt_command
