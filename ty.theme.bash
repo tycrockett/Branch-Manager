@@ -15,19 +15,30 @@ function prompt_command() {
         fi;
 
         tytheme_curBranch=$(git symbolic-ref --short -q HEAD)
-        if [[ $tytheme_curBranch == 'master' ]]; then tytheme_icon="♔"; tmp=''; fi;
-        if [[ $tytheme_curBranch != 'master' ]]; then tytheme_icon="☉"; tmp="...$tytheme_curBranch"; fi;
+        tmp=''
+        if [[ $tytheme_curBranch != 'master' ]]; then tmp="...$tytheme_curBranch"; fi;
+        
+        tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
+        if [[ -z $tytheme_remoteCheck ]]; then
+            tytheme_icon="${bold_red}!"
+            tmp=''
+        else
+            if [[ $tytheme_curBranch == 'master' ]]; then tytheme_icon="${bold_cyan}♔"; fi;
+            if [[ $tytheme_curBranch != 'master' ]]; then tytheme_icon="${bold_cyan}☉"; fi;
+            tytheme_icon="${bold_cyan}⇅"
+        fi;
         
         tmp=$(git diff master$tmp --stat | tail -n1)
         if [[ -n $tmp ]]; then
             tytheme_changeDetails="\n| $tmp"
         fi
 
-        tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
+        
         if [[ -z $tytheme_remoteCheck ]]; then
-            tytheme_GIT_UPDATER+=" ${bold_red}!"
+            tytheme_icon="${bold_red}!"
+            tmp=''
         else
-            tytheme_GIT_UPDATER+=" ${bold_cyan}⇅"
+            tytheme_icon="${bold_cyan}⇅"
         fi;
 
         tmp=$(git rev-list --count origin/master...master)
@@ -50,7 +61,7 @@ function prompt_command() {
         fi
 
 	fi;
-    PS1="\n${white}\W ${green}$tytheme_icon ${bold_green}$tytheme_curBranch$tytheme_remoteBRANCH$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${reset_color}"
+    PS1="\n${white}\W $tytheme_icon ${bold_green}$tytheme_curBranch$tytheme_remoteBRANCH$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${reset_color}"
 }
 
 safe_append_prompt_command prompt_command
