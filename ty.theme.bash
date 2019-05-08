@@ -46,10 +46,10 @@ function prompt_command() {
             tmp=$(git diff --shortstat | awk '{files+=$1; inserted+=$4; deleted+=$6;} 
                 END {
                     if (files > 0) { print "|", files, ":", inserted + deleted, "|"}
+                    if (files == 0) { print "NOFILES"}
                 }')
             char=$(git ls-files --exclude-standard --others | wc -l)
-            if [[ -z $tmp ]]; then tmp="|"; fi;
-            tmp="|U:$char$tmp"
+            if [[ $char > 0 ]]; then tmp="|U:$char$tmp"; fi;
             tmp="$(echo -e "${tmp}" | tr -d '[:space:]')"
             tytheme_GIT_UPDATER+=" ${bold_yellow}$tmp"
             # ⚡
