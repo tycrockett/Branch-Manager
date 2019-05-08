@@ -15,17 +15,18 @@ function prompt_command() {
         fi;
 
         tytheme_curBranch=$(git symbolic-ref --short -q HEAD)
-        tmp=''
-        if [[ $tytheme_curBranch != 'master' ]]; then tmp="...$tytheme_curBranch"; fi;
 
+        tmp='';
         tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
         if [[ -z $tytheme_remoteCheck ]]; then
             tytheme_icon="${bold_red}!"
-            tmp=''
         else
             if [[ $tytheme_curBranch == 'master' ]]; then tytheme_icon="${bold_cyan}♔"; fi;
             if [[ $tytheme_curBranch != 'master' ]]; then tytheme_icon="${bold_cyan}☉"; fi;
         fi;
+
+        tmp=''
+        if [[ $tytheme_curBranch != 'master' ]]; then tmp="...$tytheme_curBranch"; fi;
         
         tmp=$(git diff master$tmp --stat | tail -n1)
         if [[ -n $tmp ]]; then
@@ -46,14 +47,9 @@ function prompt_command() {
                 END {
                     if (files > 0) { print "|", files, ":", inserted + deleted, "|"}
                 }')
-            tmp1=$(git status -s | egrep -c "^ ?")
-            tmp2=$(git status -s | egrep -c "^ [MARCD]")
-            if [[ $tmp1 > $tmp2 ]]; then 
-                tmp3=`expr $tmp1 - $tmp2`
-                # tmp="|U:$tmp3$tmp"
-                char=$(git ls-files --exclude-standard --others | wc -l)
-                tmp="|U:$char$tmp"
-            fi
+            char=$(git ls-files --exclude-standard --others | wc -l)
+            if [[ -z $tmp ]]; then tmp="|"; fi;
+            tmp="|U:$char$tmp"
             tmp="$(echo -e "${tmp}" | tr -d '[:space:]')"
             tytheme_GIT_UPDATER+=" ${bold_yellow}$tmp"
             # ⚡
