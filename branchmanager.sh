@@ -802,11 +802,10 @@ _repo_getAddLine () {
 _repo_create
 readallbm=false
 
-branchManagerUpdater=$(echo $(myip) | cut -d ' ' -f 5-)
-
-if [[ -n branchManagerUpdater ]]; then
-	direc=$(pwd)
-	cd ~/Branch-Manager
-	git pull origin master --quiet
-	cd $direc
+CheckIPUpdater=$(echo $(myip) | awk '{print $(NF-1)}')
+if [[ $CheckIPUpdater =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+ 	direc=$(pwd)
+ 	cd ~/Branch-Manager
+ 	git pull origin master --quiet
+ 	cd $direc
 fi
