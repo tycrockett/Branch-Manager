@@ -801,7 +801,6 @@ _repo_getAddLine () {
 
 _repo_create
 readallbm=false
-
 CheckIPUpdater=$(echo $(myip) | awk '{print $(NF-1)}')
 if [[ $CheckIPUpdater =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
  	direc=$(pwd)
