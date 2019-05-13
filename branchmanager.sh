@@ -653,8 +653,11 @@ repo () {
 
 	if [[ $1 == 'run' ]] || [[ $1 == 'altrun' ]] || [[ $1 == 'build' ]] || [[ $1 == 'altbuild' ]]; then
 		use='t'
+		source ~/Branch-Manager/repos.bmx
+		curdir=$(echo "$curdir" | awk '{print tolower($0)}')
 		for ((idx=0; idx<${#_bm_repos[@]}; ++idx)); do
-			if [[ $curdir == ${_bm_dir[idx]} ]]; then
+			tmpdir=$(echo "${_bm_dir[idx]}" | awk '{print tolower($0)}')
+			if [[ $curdir == $tmpdir ]]; then
 				if [[ $1 == 'run' ]]; then runcmd=${_bm_run[idx]}; fi
 				if [[ $1 == 'altrun' ]]; then runcmd=${_bm_altrun[idx]}; fi
 				if [[ $1 == 'build' ]]; then runcmd=${_bm_build[idx]}; fi
