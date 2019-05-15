@@ -414,6 +414,7 @@ if [[ $1 == 'help' ]]; then
 	echo "[BLANK]:			List branches"
 	echo "[1, 2, 3]:			Checkout branch from list"
 	echo "new/n <branch>:			checkout master, pull origin master, create new branch"
+	echo "transfer <branch>:	create a new branch and transfer all changes to new branch"
 	echo "rename/rn <branch>:		Rename local branch and optionally remote branch"
 	echo "clear: 				Stash and optionally clear"
 	echo "delete:			 	Delete current branch"
