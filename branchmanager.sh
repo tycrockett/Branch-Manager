@@ -70,22 +70,22 @@ bm () {
 				bm__newbranch $2
 				bm
 			else
-				if [[ $3 == 'transfer' ]]; then
-					git branch $2
-					git checkout $2
-					bm . "Create branch $2 with changes from $currentBranch"
-					bm update
-				else
-					echo
-					printf "\e[31mCouldn't create new branch\e[37m\n"
-					echo "Commit your changes or"
-					printf "Use \e[35mbm clear\e[37m to clear all changes and try again or\n"
-					printf "Use \e[35mbm new $2 transfer\e[37m to transfer changes to the new branch\n"
-					echo
-					bm s
-				fi
+				echo
+				printf "\e[31mCouldn't create new branch\e[37m\n"
+				echo "Commit your changes or"
+				printf "Use \e[35mbm clear\e[37m to clear all changes and try again or\n"
+				printf "Use \e[35mbm transfer $2\e[37m to transfer changes to the new branch\n"
+				echo
+				bm s
 			fi
 			used=true
+		fi
+
+		if [[ $1 == 'transfer' ]]; then
+			git branch $2
+			git checkout $2
+			bm . "Create branch $2 with changes from $currentBranch"
+			bm update
 		fi
 
 		if [[ $1 == 'rename' ]] || [[ $1 == 'rn' ]] ; then
