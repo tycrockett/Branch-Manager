@@ -102,7 +102,7 @@ bm () {
 			used=true
 		fi
 
-		if [[ $1 == 'details' ]]; then
+		if [[ $1 == 'diff' ]]; then
 			git diff master..HEAD -- $2
 		fi;
 		
