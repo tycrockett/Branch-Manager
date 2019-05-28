@@ -1,4 +1,4 @@
-bm () {
+bmo () {
 	used=false
 	if [[ $1 == 'readall' ]]; then
 		if [[ $readallbm == true ]]; then readallbm=false; used=true; fi;
@@ -325,6 +325,7 @@ bm () {
 			git checkout $2
 			git merge $currentBranch
 			git push origin $2
+			bm delete
 		fi
 
 		if [[ $1 == 'check' ]]; then
