@@ -321,6 +321,12 @@ bm () {
 			if [[ $SHOWLOGS == true ]]; then echo; bm log; fi;
 		fi
 
+		if [[ $1 == 'merge' ]]; then
+			git checkout $2
+			git merge $currentBranch
+			git push origin $2
+		fi
+
 		if [[ $1 == 'check' ]]; then
 			used=true
 			_runCMD "git branch -a | egrep 'remotes/origin/${tytheme_curBranch}$'" false
