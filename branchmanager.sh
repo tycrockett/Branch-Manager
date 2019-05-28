@@ -162,7 +162,7 @@ bm () {
 			fi
 		fi
 		
-		if [[ $1 == 'update' ]] || [[ $1 == 'rf' ]] ; then
+		if [[ $1 == 'update' ]] || [[ $1 == 'u' ]] ; then
 			status=$(git status)
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
@@ -249,6 +249,12 @@ bm () {
 			git commit;
 		fi
 
+		if [[ $1 == 'rm-file' ]]; then
+			hashMe=$(git merge-base master $currentBranch)
+			git checkout $hashMe $2
+			git commit -m "Remove $2 from commit"
+		fi
+
 		if [[ $1 == 'status' ]] || [[ $1 == 's' ]] || [[ $1 == 'sc' ]]; then
 			SHOWALLDETAILS=false
 			SHOWDETAILS=false
@@ -274,17 +280,15 @@ bm () {
 			fixed=${status: -37}
 			if [[ $fixed == "nothing to commit, working tree clean" ]]; then
 				tmp=$(git rev-parse --short HEAD)
-				printf "\e[35mCommit Hash: $tmp\e[37m\n"
-				if [[ $SHOWDETAILS == true ]]; then 
+				_BM_header "Commit Hash: $tmp" "\e[35m"
+				if [[ $SHOWDETAILS == true ]]; then				
 					git diff master...$currentBranch --stat
 				else
 					git diff master...$currentBranch --stat | tail -n1
 				fi
 			else
+				_BM_header "Changes" "\e[34m"
 				git diff master...$currentBranch --stat | tail -n1
-				echo
-				printf "\e[34mCHANGES\e[37m\n"
-				printf "\e[34m---------------------------------------------------\e[37m\n"
 				_runCMD "git diff --stat" true
 				_runCMD "git ls-files . --exclude-standard --others" false
 				tmp=$(git ls-files --exclude-standard --others | wc -l)
@@ -340,6 +344,7 @@ bm () {
 
 		if [[ $1 == 'log' ]]; then
 			used=true
+			_BM_header "$currentBranch" "\e[35m"
 			tmp="..$currentBranch"
 			tmpN=5
 			if [[ -n $2 ]]; then tmpN=$2; fi;
@@ -404,37 +409,36 @@ else
 fi
 
 if [[ $1 == 'help' ]]; then
+	_BM_header "Branch Manager Help" "\e[33m"
 	echo
-	printf "                  \e[33mBranch Manager:\e[37m\n"
-	echo "---------------------------------------------------"
-	echo
-	echo "bm [command]"
-	echo
-	echo "Commands:"
-	echo "[BLANK]:			List branches"
-	echo "[1, 2, 3]:			Checkout branch from list"
-	echo "new/n <branch>:			checkout master, pull origin master, create new branch"
-	echo "transfer <branch>:	create a new branch and transfer all changes to new branch"
-	echo "rename/rn <branch>:		Rename local branch and optionally remote branch"
-	echo "clear: 				Stash and optionally clear"
-	echo "delete:			 	Delete current branch"
-	echo "update/rf <all>: 		checkout master, pull origin master, merge to current or all branches"
-	echo "pull:				git pull"
-	echo "status/s:			status of branch"
-	echo "< -l -d -a >:			show logs / show details / show diffs"
-	echo "sc:				git status, check if remote branch exists"
-	echo "check:				check if local branch has a remote branch"
-	echo "pushup: 			create remote branch and push to it"
-	echo ". <description>:		add, commit -m <des>, push (If remote exists)"
-	echo "remote:				open remote branch in default browser"
-	echo "log:				log commits in current branch"
-	echo "compop:				delete last commit on current branch"
-	echo "clone:				git clone --> optionally create repo keys and cmds"
-	echo "repo:				display repo cmds and directory"
-	echo "run:				start assigned repo run cmd"
-	echo "add:				assign a keyword to current directory and add repo cmds"
-	echo "list:				list all repo keys and their cmds"
-	echo "repo del [key]:			delete repo keys and associated cmds"
+	_echoR "bm [command]" ""
+	_echoR "Commands:" ""
+	_echoR "[BLANK]:" "List branches"
+	_echoR "[1, 2, 3]:" "Checkout branch from list"
+	_echoR "new/n <branch>:" "checkout master, pull origin master, create new branch"
+	_echoR "transfer <branch>:" "create a new branch and transfer all changes to new branch"
+	_echoR "rename/rn <branch>:" "Rename local branch and optionally remote branch"
+	_echoR "clear:" "Stash and optionally clear"
+	_echoR "delete:" "Delete current branch"
+	_echoR "update/rf <all>:" "checkout master, pull origin master, merge to current or all branches"
+	_echoR "pull:" "git pull"
+	_echoR "status/s:" "status of branch"
+	_echoR "< -l -d -a >:" "show logs / show details / show diffs"
+	_echoR "sc:" "git status, check if remote branch exists"
+	_echoR "check:" "check if local branch has a remote branch"
+	_echoR "pushup:" "create remote branch and push to it"
+	_echoR "diff <filename>:" "show diff between master and specific file"
+	_echoR "rm <filename>:" "removes a file from a commit"
+	_echoR ". <description>:" "add, commit -m <des>, push (If remote exists)"
+	_echoR "remote:" "open remote branch in default browser"
+	_echoR "log:" "log commits in current branch"
+	_echoR "compop:" "delete last commit on current branch"
+	_echoR "clone:" "git clone --> optionally create repo keys and cmds"
+	_echoR "repo:" "display repo cmds and directory"
+	_echoR "run:" "start assigned repo run cmd"
+	_echoR "add:" "assign a keyword to current directory and add repo cmds"
+	_echoR "list:" "list all repo keys and their cmds"
+	_echoR "repo del [key]:" "delete repo keys and associated cmds"
 	echo
 	used=true
 fi
@@ -445,6 +449,11 @@ if [[ $test_branch_manager == true ]]; then
 		echo "!Invalid!"
 	fi
 fi
+}
+
+_echoR () {
+	printf " \e[32m%-25s\e[37m%s\n" "$1" "$2"
+	printf "\n"
 }
 
 _runCMD() {
@@ -467,31 +476,40 @@ bm__changebranch () {
 	br=()
 	current=$(git symbolic-ref --short -q HEAD)
 	if [[ -z $1 ]]; then
-		echo
-		printf "                  \e[33mBranch Manager:\e[37m\n"
-		echo "---------------------------------------------------"
+	_BM_header "Branch List" "\e[33m"
 	fi
-	for branch in $(git branch | grep "[^* ]+" -Eo);
-	do
-		if [ -z $1 ]
-		then
-			ll=`expr $ll + 1`
-			color='\e[37m'
-			colorUpdate=''
-			selected='  '
-			if [[ $branch == $current ]]; then
-				color='\e[32m'
-				#colorUpdate='\e[33m'
-				selected='☆ '
+
+	status=$(git status | head -n1)
+	fixed=${status:0:4}
+	if [[ $fixed != 'HEAD' ]]; then
+
+		for branch in $(git branch | grep "[^* ]+" -Eo);
+		do
+			if [ -z $1 ]
+			then
+				ll=`expr $ll + 1`
+				color='\e[37m'
+				colorUpdate=''
+				selected='  '
+				if [[ $branch == $current ]]; then
+					color='\e[32m'
+					selected='☆ '
+				fi
+				displayText="$color$selected$ll. $colorUpdate$branch"
+				spaces=$(_BM_getRemainingSpace 55 "$color$selected$ll. $colorUpdate$branch")
+				printf "│ ${displayText}${spaces}\e[37m│\n"
 			fi
-			printf " $color$selected$ll. $colorUpdate$branch \n"
-		fi
-		br+=($branch)
-	done
+			br+=($branch)
+		done
+	else
+		displayText="$status"
+		spaces=$(_BM_getRemainingSpace 49 "$displayText")
+		printf "│ ${displayText}${spaces}\e[37m│\n"
+	fi
 		
 	if [ -z $1 ]
 	then
-		printf "\e[37m---------------------------------------------------\n"
+		printf "\e[37m╰──────────────────────────────────────────────────╯\n"
 		echo
 		echo $remoteDir
 	else
@@ -812,3 +830,25 @@ if [[ $CheckIPUpdater =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
  	git pull origin master --quiet
  	cd $direc
 fi
+
+_BM_header () {
+	wordLength=${#1}
+	leftLength=`expr 25 - $wordLength / 2`
+	leftSpaces=$(printf '%0.s ' $(seq 1 $leftLength))
+	rightLength=`expr 50 - $leftLength - $wordLength`
+	rightSpaces=$(printf '%0.s ' $(seq 1 $rightLength))
+	printf "\e[37m"
+	echo "╭──────────────────────────────────────────────────╮"
+	printf "│${2}${leftSpaces}${1}${rightSpaces}\e[37m│\n"
+	echo "╰──────────────────────────────────────────────────╯"
+}
+
+_BM_getRemainingSpace () {
+	length=${#2}
+	spaceLength=`expr $1 - $length`
+	printf '%0.s ' $(seq 1 $spaceLength)
+}
+
+# ╭─╮
+# │ │
+# ╰─╯

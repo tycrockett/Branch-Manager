@@ -29,7 +29,7 @@ function prompt_command() {
         if [[ $tytheme_curBranch != 'master' ]]; then tmp="...$tytheme_curBranch"; fi;
         
         tmp=$(git diff master$tmp --stat | tail -n1)
-        if [[ -n $tmp ]]; then
+        if [[ -n $tmp ]] && [[ $tytheme_curBranch != 'master' ]]; then
             tytheme_changeDetails="\n| $tmp"
         fi
 
@@ -48,6 +48,13 @@ function prompt_command() {
                     if (files > 0) { print "|", files, ":", inserted + deleted, "|"}
                     if (files == 0) { print "NOFILES"}
                 }')
+            if [[ $tmp == 'NOFILES' ]]; then
+            tmp=$(git diff --cached --shortstat | awk '{files+=$1; inserted+=$4; deleted+=$6;} 
+                END {
+                    if (files > 0) { print "|STAGED: ", files, ":", inserted + deleted, "|"}
+                    if (files == 0) { print "NOFILES"}
+                }')
+            fi
             char=$(git ls-files --exclude-standard --others | wc -l)
             if [[ $char > 0 ]]; then tmp="|U:$char$tmp"; fi;
             tmp="$(echo -e "${tmp}" | tr -d '[:space:]')"
