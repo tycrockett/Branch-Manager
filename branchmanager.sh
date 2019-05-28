@@ -433,6 +433,7 @@ if [[ $1 == 'help' ]]; then
 	_echoR "sc:" "git status, check if remote branch exists"
 	_echoR "check:" "check if local branch has a remote branch"
 	_echoR "pushup:" "create remote branch and push to it"
+	_echoR "Merge <branch>:" "Merge into <branch>"
 	_echoR "diff <filename>:" "show diff between master and specific file"
 	_echoR "rm <filename>:" "removes a file from a commit"
 	_echoR ". <description>:" "add, commit -m <des>, push (If remote exists)"
