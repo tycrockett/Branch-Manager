@@ -16,7 +16,7 @@ rpo () {
 			read -r -p '' keyname
 			printf "\e[32mRepo Default Branch: \e[37m"
 			read -r -p '' defBranch
-			initPackFile $curfolder $curdir $keyname $defBranch true
+			initPackFile $curfolder $curdir $keyname "$defBranch" true
 		;;
 		'help')
 			printf "|"
