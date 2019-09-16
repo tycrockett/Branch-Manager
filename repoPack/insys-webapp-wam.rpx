@@ -1,0 +1,4 @@
+BM_REPO_directory='/Users/ty.crockett@getweave.com/Desktop/Weave/insys-webapp-wam'
+BM_REPO_keyname='wam'
+BMGLOBES_defaultBranch='master'
+BM_REPO_cmds=()

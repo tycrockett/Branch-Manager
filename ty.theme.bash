@@ -21,24 +21,29 @@ function prompt_command() {
         if [[ -z $tytheme_remoteCheck ]]; then
             tytheme_icon="${bold_red}!"
         else
-            if [[ $tytheme_curBranch == 'master' ]]; then tytheme_icon="${bold_cyan}♔"; fi;
-            if [[ $tytheme_curBranch != 'master' ]]; then tytheme_icon="${bold_cyan}☉"; fi;
+            if [[ $tytheme_curBranch == $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}♔"; fi;
+            if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}☉"; fi;
         fi;
 
         tmp=''
-        if [[ $tytheme_curBranch != 'master' ]]; then tmp="...$tytheme_curBranch"; fi;
-        
-        tmp=$(git diff master$tmp --stat | tail -n1)
-        if [[ -n $tmp ]] && [[ $tytheme_curBranch != 'master' ]]; then
+        if [[ $BMGLOBES_defaultBranch != 'master' ]]; then tmp="origin/$BMGLOBES_defaultBranch"; fi;
+        if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tmp="$BMGLOBES_defaultBranch...$tytheme_curBranch"; fi;
+        if [[ $BMGLOBES_defaultBranch == 'master' && $tytheme_curBranch == 'master' ]]; then tmp="$BMGLOBES_defaultBranch"; fi;
+
+        # tmp=$(git diff $tmp --stat | tail -n1)
+        tmp=$(git diff "$tmp" --stat | tail -n1)
+        if [[ -n $tmp ]] && [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then
             tytheme_changeDetails="\n| $tmp"
         fi
 
-        tmp=$(git rev-list --count origin/master...master)
+        if [[ $BMGLOBES_defaultBranch != '' ]]; then
+            tmp=$(git rev-list --count origin/$BMGLOBES_defaultBranch...$BMGLOBES_defaultBranch)
+        fi
         if [[ $tmp > 0 ]]; then
             tmp1=" ${bold_blue}☝${white}"; 
             tytheme_GIT_UPDATER+=$tmp1
         else 
-            (git fetch origin master &>/dev/null &); 
+            (git fetch origin $BMGLOBES_defaultBranch &>/dev/null &); 
         fi;
 
         tmp=$(git status -s | egrep -c "^ ?")
@@ -55,8 +60,9 @@ function prompt_command() {
                     if (files == 0) { print "NOFILES"}
                 }')
             fi
+            if [[ $tmp == 'NOFILES' ]]; then tmp='|'; fi
             char=$(git ls-files --exclude-standard --others | wc -l)
-            if [[ $char > 0 ]]; then tmp="|U:$char$tmp"; fi;
+            if [[ $char -gt 0 ]]; then tmp="|U:$char$tmp"; fi;
             tmp="$(echo -e "${tmp}" | tr -d '[:space:]')"
             tytheme_GIT_UPDATER+=" ${bold_yellow}$tmp"
             # ⚡

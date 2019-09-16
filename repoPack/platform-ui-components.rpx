@@ -1,0 +1,4 @@
+BM_REPO_directory='/Users/ty.crockett@getweave.com/Desktop/Weave/platform-ui-components'
+BM_REPO_keyname='shared-ui'
+BMGLOBES_defaultBranch='master'
+BM_REPO_cmds=()

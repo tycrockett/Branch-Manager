@@ -1,0 +1,3 @@
+BM_REPOS=()
+BM_REPOS+=('gamit:/Users/ty.crockett@getweave.com/Desktop/projects/Gamit')
+BM_REPOS+=('bm:/Users/ty.crockett@getweave.com/Branch-Manager')
