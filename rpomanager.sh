@@ -131,7 +131,7 @@ rpo () {
 
 initPackFile () {
 	if [[ -f ~/Branch-Manager/repoPack/$1.rpx ]]; then
-		if [[ $4 == true ]]; then
+		if [[ $5 == true ]]; then
 			echo
 			echo "$keyname already exists!"
 		else
