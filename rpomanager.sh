@@ -158,7 +158,10 @@ addNewPack () {
 }
 
 rebuildPack () {
-	if [[ -f ~/Branch-Manager/repoPack/packs.rpx ]]; then del ~/Branch-Manager/repoPack/packs.rpx; fi
+	if [[ -f ~/Branch-Manager/repoPack/packs.rpx ]]; then 
+		source ~/Branch-Manager/repoPack/packs.rpx
+		del ~/Branch-Manager/repoPack/packs.rpx 
+	fi
 	touch ~/Branch-Manager/repoPack/packs.rpx
 	echo "BM_REPOS=()"  >> ~/Branch-Manager/repoPack/packs.rpx
 	for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
