@@ -1,5 +1,0 @@
-BM_REPO_directory='/Users/ty.crockett@getweave.com/Desktop/projects/Gamit'
-BM_REPO_keyname='gamit'
-BMGLOBES_defaultBranch='false'
-BM_REPO_cmds=()
-BM_REPO_cmds+=('r:python3 main.py')

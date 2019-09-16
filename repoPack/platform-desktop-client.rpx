@@ -1,6 +1,0 @@
-BM_REPO_directory='/Users/ty.crockett@getweave.com/Desktop/Weave/platform-desktop-client'
-BM_REPO_keyname='jub'
-BMGLOBES_defaultBranch='dev'
-BM_REPO_cmds=()
-BM_REPO_cmds+=('r:grunt serve')
-BM_REPO_cmds+=('ar:grunt dev-osx')
