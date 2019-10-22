@@ -363,6 +363,7 @@ bm () {
 								fi	
 				;;
 				*)
+								git checkout $1
 								_BM_header "Help"
 				;;
 			esac
@@ -976,6 +977,17 @@ _BM_getRemainingSpace () {
 	length=${#2}
 	spaceLength=`expr $1 - $length`
 	printf '%0.s ' $(seq 1 $spaceLength)
+}
+
+branchCompletion () {
+	inGitRepo=$(git rev-parse --git-dir 2> /dev/null)
+	if [ $inGitRepo ]; then
+		BC_completionString=""
+		for BC_branch in $(git branch | grep "[^* ]+" -Eo);
+		do BC_completionString+=" $BC_branch"
+		done
+		complete -W "$BC_completionString" bm
+	fi
 }
 
 # ╭─╮

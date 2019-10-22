@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 function prompt_command() {
+    branchCompletion
     tytheme_icon='';
     tytheme_curBranch='';
     tytheme_changeDetails='';
