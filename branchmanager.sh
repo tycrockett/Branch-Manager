@@ -29,12 +29,13 @@ bm () {
 									_runCMD "git checkout $2" true
 								if [[ $readallbm == false ]]; then bm; fi;
 							else
-								echo
-								printf "\e[31mCouldn't create new branch\e[37m\n"
-								echo "Commit your changes or"
-								printf "Use \e[35mbm clear\e[37m to clear all changes and try again or\n"
-								printf "Use \e[35mbm transfer $2\e[37m to transfer changes to the new branch\n"
-								echo
+								_runCMD "git checkout -b $2" true
+								bm . "Changes from $currentBranch"
+								_runCMD "git checkout $BMGLOBES_defaultBranch" true
+								_runCMD "git pull origin $BMGLOBES_defaultBranch" true
+								_runCMD "git checkout $2" true
+								_runCMD "git merge $BMGLOBES_defaultBranch" true
+
 								if [[ $readallbm == false ]]; then bm s; fi;
 							fi
 
