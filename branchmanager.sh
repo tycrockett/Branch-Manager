@@ -364,7 +364,7 @@ bm () {
 				;;
 				*)
 								git checkout $1
-								_BM_header "Help"
+								_BM_header $1
 				;;
 			esac
 		fi
