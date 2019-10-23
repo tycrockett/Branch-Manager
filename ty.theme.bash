@@ -2,6 +2,7 @@
 
 function prompt_command() {
     branchCompletion
+    rpoCompletion
     tytheme_icon='';
     tytheme_curBranch='';
     tytheme_changeDetails='';

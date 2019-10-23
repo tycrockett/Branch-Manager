@@ -256,4 +256,14 @@ runCmd () {
 	done
 }
 
+if [[ -f ~/Branch-Manager/repoPack/packs.rpx ]]; then source ~/Branch-Manager/repoPack/packs.rpx; fi
+
+rpoCompletion () {
+	BC_cmdCompletion=""
+	for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
+		BC_cmdCompletion+=" $(cut -d ":" -f 1 <<< "${BM_REPOS[i]}")"
+	done
+	complete -W "$BC_cmdCompletion" rpo
+}
+
 loadRepoSettings ${PWD##*/}
