@@ -32,7 +32,6 @@ function prompt_command() {
         if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tmp="$BMGLOBES_defaultBranch...$tytheme_curBranch"; fi;
         if [[ $BMGLOBES_defaultBranch == 'master' && $tytheme_curBranch == 'master' ]]; then tmp="$BMGLOBES_defaultBranch"; fi;
 
-        # tmp=$(git diff $tmp --stat | tail -n1)
         tmp=$(git diff "$tmp" --stat | tail -n1)
         if [[ -n $tmp ]] && [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then
             tytheme_changeDetails="\n| $tmp"

@@ -66,6 +66,15 @@ rpo () {
 				rebuildPack $check "$BM_REPO_keyname:$BM_REPO_directory"
 			fi
 		;;
+		'del')
+			dir=$(getRepoByKeyname $2)
+			if [[ dir != 'INVALID' ]]; then
+				folder=${dir##*/}
+				check="$2:$dir"
+				rebuildPack $check
+				del ~/Branch-Manager/repoPack/$folder.rpx
+			fi
+		;;
 		'rm')
 			if [[ -n $2 ]]; then
 			idx=$(indexCmd $2)
@@ -73,8 +82,16 @@ rpo () {
 					initPackFile $curfolder $curdir $BM_REPO_keyname $BMGLOBES_defaultBranch false
 					rebuildCmds $curfolder '' $idx
 				else
-					echo
-					echo "That command doesn't exist."
+					dir=$(getRepoByKeyname $2)
+					if [[ $dir != 'INVALID' ]]; then
+						folder=${dir##*/}
+						check="$2:$dir"
+						rebuildPack $check
+						del ~/Branch-Manager/repoPack/$folder.rpx
+					else
+						echo
+						echo "That command/pack doesn't exist."
+					fi
 				fi
 			else
 				if [[ -f ~/Branch-Manager/repoPack/$curfolder.rpx ]]; then
@@ -215,6 +232,27 @@ indexCmd () {
 		fi
 	done
 	echo $check
+}
+
+indexKeyname () {
+	check="INVALID"
+	for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
+		kn=$(cut -d ":" -f 1 <<< "${BM_REPOS[i]}")
+		if [[ $kn == $1 ]] && [[ -n $1 ]]; then
+			check=$i
+		fi
+	done
+	echo $check
+}
+
+deleteByIndex () {
+	arr=(${BM_REPOS[@]:0})
+	if [[ -n $1 ]]; then
+		arr=(${BM_REPOS[@]:0:$1})
+		newIdx=`expr $1 + 1`
+		arr+=(${BM_REPOS[@]:$newIdx})
+	fi
+	echo $arr
 }
 
 getRepoByKeyname () {

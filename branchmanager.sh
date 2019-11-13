@@ -273,6 +273,10 @@ bm () {
 						fi
 			;;
 
+			'default-b')
+							BMGLOBES_defaultBranch=$2
+			;;
+
 			'delete')
 							clearIt
 							used=true
@@ -366,6 +370,31 @@ bm () {
 								git checkout $1
 								_BM_header $1
 				;;
+			esac
+		else
+			case $1 in
+				'init')
+							if [ -z $4 ]; then
+								echo "Initializing GIT.."
+								git init
+								git add .
+								git commit -m 'Create new repo'
+								echo "Initializing GITHUB.."
+								git remote add origin "https://github.com/$2/$3.git"
+								gitterCheck=$(git rev-parse --git-dir 2> /dev/null);
+								if [ $gitterCheck ]; then
+									repoCheck=$(git remote -v)
+									if [ $repoCheck ]; then
+										echo "Initialized remote branch"	
+										git push -u origin master
+									else
+										echo "Couldn't initialize remote branch"
+									fi
+								fi
+							else
+								echo "Bunches of oats"
+							fi
+				;;			
 			esac
 		fi
 }
@@ -990,6 +1019,11 @@ branchCompletion () {
 	fi
 }
 
+newtabi(){
+  osascript \
+  -e 'tell application "iTerm2" to tell current window to set newWindow to (create tab with default profile)'\
+  -e "tell application \"iTerm2\" to tell current session of newWindow to write text \"${@}\""
+}
 # ╭─╮
 # │ │
 # ╰─╯
