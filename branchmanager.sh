@@ -1,4 +1,4 @@
-source helpFile.sh
+source ~/Branch-Manager/helpFile.sh
 bm () {
 	BMREPO_check=$(git rev-parse --git-dir 2> /dev/null)
 	numberString="^[0-9]+$"
