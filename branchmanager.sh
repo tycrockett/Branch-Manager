@@ -1,3 +1,4 @@
+source helpFile.sh
 bm () {
 	BMREPO_check=$(git rev-parse --git-dir 2> /dev/null)
 	numberString="^[0-9]+$"
@@ -52,12 +53,6 @@ bm () {
 								fi
 							fi
 			;;
-			'transfer')
-							git branch $2
-							git checkout $2
-							bm . "Create branch $2 with changes from $currentBranch"
-			;;
-
 			'clear')
 							if [[ $2 == '-f' ]]; then
 								_runCMD "git add ." true
@@ -90,13 +85,6 @@ bm () {
 			
 			'.'|'acp')
 							if [[ $currentBranch != $BMGLOBES_defaultBranch ]] || [[ $3 == '-f' ]]; then
-
-								if [[ $3 == '-fix' ]]; then
-									clearIt
-									_runCMD "git commit -m '$2' --no-verify" false
-									git commit -m "$2" --no-verify
-								fi
-
 								if [[ -n $2 ]] && [[ $3 != '-m' ]]; then
 									clearIt
 									_runCMD "git add ." false
@@ -115,16 +103,6 @@ bm () {
 								if [[ $3 != '-d' ]]; then clearIt; fi
 								bm s
 								used=true
-							fi
-			;;
-
-			'merge')
-							if [[ $BMGLOBES_defaultBranch != $currentBranch ]]; then
-								git checkout $BMGLOBES_defaultBranch
-								git pull origin $BMGLOBES_defaultBranch
-								git merge $currentBranch
-								git push origin master
-								git checkout $currentBranch
 							fi
 			;;
 
@@ -163,9 +141,7 @@ bm () {
 										\?) ;;
 									esac
 								fi;
-							done
-
-							
+							done							
 							echo
 							status=$(git status)
 							fixed=${status: -37}
@@ -365,6 +341,30 @@ bm () {
 									fi
 									_runCMD "git checkout $coBranch" true
 								fi	
+				;;
+				'help')
+								if [[ -z $2 ]]; then
+									echo
+									printf "bm \e[34mcmd\e[37m\n"
+									echo "---------"
+									_echoR "[blank]" "List all branchs"
+									_echoR "[branch name]" "Checkout (branch name)"
+									_echoR "new | n" "Create new branch"
+									_echoR ". | acp" "Commit all changes"
+									_echoR "status | s" "Get status of branch"
+									_echoR "update | u" "Update (default branch) and merge into (current branch)"
+									_echoR "rename | rn" "Rename current branch"
+									_echoR "delete" "Delete current branch"
+									_echoR "remote" "Open github remote branch"
+									_echoR "clear" "Delete any uncommitted changes in branch"
+									_echoR "compop" "Delete last commit"
+									_echoR "log" "Log commit history"
+									_echoR "rm-file" "Remove a file from commit history"
+									_echoR "pushup" "set upstream remote branch"
+									_echoR "diff" "Get the difference for specific file"
+								else
+									showHelp $2
+								fi
 				;;
 				*)
 								git checkout $1
