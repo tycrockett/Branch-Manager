@@ -141,6 +141,7 @@ showHelp () {
       echo "- git merge (current branch)"
       echo "- git push"
       echo "- git checkout (current branch)"
+    ;;
     *) echo "That command doesn't exist";;
   esac
 }
