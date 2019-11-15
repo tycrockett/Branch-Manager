@@ -523,3 +523,10 @@ newtabi(){
 # ╰─╯
 
 source ~/Branch-Manager/rpomanager.sh
+
+# promptCommand () {
+# 	echo "hello"
+# 	PS1="Fish"
+# }
+
+# PROMPT_COMMAND=promptCommand
