@@ -2,6 +2,10 @@ showHelp () {
   case $1 in
     'new'|'n')
       _BM_header "new | n" "\e[34m"
+      printf "\e[32m"
+      echo "Required Opts: new branch name"
+      echo "bm n (new branch name)"
+      printf "\e[37m"
       echo "- git checkout default branch (defined by rpo)"
       echo "- git pull origin default branch"
       echo "- git branch (create new branch)"
@@ -17,6 +21,10 @@ showHelp () {
     ;;
     'rename'|'rn')
       _BM_header "rename | rn" "\e[34m"
+      printf "\e[32m"
+      echo "Required Opts: new name"
+      echo "bm rn (new name)"
+      printf "\e[37m"
       echo "- git branch -m (new name)"
       echo "- Update remote branch option"
       echo "    - git push origin :(old name) (new name)"
@@ -24,7 +32,10 @@ showHelp () {
     ;;
     'clear')
       _BM_header "clear" "\e[34m"
-      echo "- optional switch '-f'"
+      printf "\e[32m"
+      echo "Optional Opts: -f"
+      printf "\e[37m"
+      echo "- '-f'"
       echo "  - git add ."
       echo "- git stash clear"
     ;;
@@ -35,6 +46,10 @@ showHelp () {
     ;;
     '.'|'acp')
       _BM_header ". | acp" "\e[34m"
+      printf "\e[32m"
+      echo "Required Opts: message"
+      echo "bm . '(message)'"
+      printf "\e[37m"
       echo "- If the current branch is NOT the default branch:"
       echo "  - git add ."
       echo "  - git commit -m (message)"
@@ -45,18 +60,29 @@ showHelp () {
     ;;
     'log')
       _BM_header "log" "\e[34m"
+      printf "\e[32m"
+      echo "Optional Opts: Number"
+      echo "bm log (Number)"
+      printf "\e[37m"
       echo "- Git log (default branch ... current branch) --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative"
       echo "- Option: Number"
       echo "    - Increases how many commits to go back in history"
     ;;
     'rm-file')
       _BM_header "log" "\e[34m"
+      printf "\e[32m"
+      echo "Required Opts: relative filepath"
+      echo "bm rm-file (relative filepath)"
+      printf "\e[37m"
       echo "- hash=$(git merge-base (default branch) (current branch))"
-      echo "- git checkout (hash) (relative file)"
-      echo "- git commit -m 'Remove (relative file) from commit'"
+      echo "- git checkout (hash) (relative filepath)"
+      echo "- git commit -m 'Remove (relative filepath) from commit'"
     ;;
     'status'|'s')
       _BM_header "status | s" "\e[34m"
+      printf "\e[32m"
+      echo "Optional Opts: -d"
+      printf "\e[37m"
       echo "- If changes don't exist:"
       echo "  - git diff (default branch)...(current branch) --stat"
       echo "  - Option: -d"
@@ -99,7 +125,11 @@ showHelp () {
     ;;
     'diff')
       _BM_header "diff" "\e[34m"
-      echo "- git diff (default branch)..HEAD -- (relative file)"
+      printf "\e[32m"
+      echo "Required: relative filepath"
+      echo "bm diff (relative filepath)"
+      printf "\e[37m"
+      echo "- git diff (default branch)..HEAD -- (relative filepath)"
     ;;
     *) echo "That command doesn't exist";;
   esac

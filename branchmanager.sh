@@ -9,11 +9,7 @@ bm () {
 		re='^[0-9]+$'
 
 		case $1 in
-			'read')
-							readallbm=true;
-							bm $2 $3 $4
-							readallbm=false;
-			;;
+			'_edit') code ~/Branch-Manager/branchmanager.sh;;
 			'new'|'n')
 							clearIt
 							status=$(git status)
