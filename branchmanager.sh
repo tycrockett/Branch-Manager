@@ -285,6 +285,13 @@ bm () {
 								BMGLOBES_defaultBranch=$2
 				;;
 
+				'merge')
+								git checkout $2
+								git merge $currentBranch
+								git push
+								git checkout $currentBranch
+				;;
+
 				'delete')
 								clearIt
 								used=true
