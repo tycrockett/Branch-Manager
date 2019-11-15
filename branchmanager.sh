@@ -538,3 +538,6 @@ source ~/Branch-Manager/rpomanager.sh
 # }
 
 # PROMPT_COMMAND=promptCommand
+
+source theme.bash
+PROMPT_COMMAND=prompt_command
