@@ -131,6 +131,16 @@ showHelp () {
       printf "\e[37m"
       echo "- git diff (default branch)..HEAD -- (relative filepath)"
     ;;
+    'merge-into')
+      _BM_header "merge-into" "\e[34m"
+      printf "\e[32m"
+      echo "Required: branch"
+      echo "bm merge-into (branch)"
+      printf "\e[37m"
+      echo "- git checkout (branch)"
+      echo "- git merge (current branch)"
+      echo "- git push"
+      echo "- git checkout (current branch)"
     *) echo "That command doesn't exist";;
   esac
 }

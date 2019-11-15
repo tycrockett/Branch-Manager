@@ -396,6 +396,7 @@ bm () {
 										_echoR "delete" "Delete current branch"
 										_echoR "remote" "Open github remote branch"
 										_echoR "clear" "Delete any uncommitted changes in branch"
+										_echoR "merge-into" "Merge current branch into (branch)"
 										_echoR "compop" "Delete last commit"
 										_echoR "log" "Log commit history"
 										_echoR "rm-file" "Remove a file from commit history"
