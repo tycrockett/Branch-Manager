@@ -19,7 +19,15 @@ function prompt_command() {
     tytheme_remoteBRANCH='';
     tmp='';
     tytheme_gitterCheck=$(git rev-parse --git-dir 2> /dev/null);
-    if [ $tytheme_gitterCheck ]; then
+    curfolder=${PWD##*/}
+    loadRepoSettings $curfolder
+    if [[ $BM_REPO_directory != $(pwd) ]]; then
+		BM_REPO_directory=''
+		BM_REPO_keyname=''
+		BMGLOBES_defaultBranch=''
+		BM_REPO_cmds=()
+	fi
+    if [ $tytheme_gitterCheck ] && [ $BMGLOBES_defaultBranch ]; then
 
         if [ $tytheme_gitterCheck != '.git' ]; then
             tmp="${green} in $(basename "${tytheme_gitterCheck%/*}")"

@@ -1,3 +1,4 @@
+source ~/Branch-Manager/theme.bash
 source ~/Branch-Manager/helpFile.sh
 bm () {
 	BMREPO_check=$(git rev-parse --git-dir 2> /dev/null)
@@ -13,7 +14,11 @@ bm () {
 		esac
 	done
 
-	if [ $BMREPO_check ]; then
+	if [ -z $BMREPO_defaultBranch ]; then
+		echo "There is no repo pack set up, use rpo new to create a new pack to better use bm"
+	fi
+
+	if [ $BMREPO_check ] && [ $BMREPO_defaultBranch ]; then
 		if [ $BMCHECK_HELP == true ]; then
 			curdir=$(pwd)
 			currentBranch=$(git symbolic-ref --short -q HEAD)
@@ -539,5 +544,4 @@ source ~/Branch-Manager/rpomanager.sh
 
 # PROMPT_COMMAND=promptCommand
 
-source theme.bash
 PROMPT_COMMAND=prompt_command

@@ -2,12 +2,6 @@ rpo () {
 	curdir=$(pwd)
 	curfolder=${PWD##*/}
 	loadRepoSettings $curfolder
-	if [[ $BM_REPO_directory != $curdir ]]; then
-		BM_REPO_directory=''
-		BM_REPO_keyname=''
-		BMGLOBES_defaultBranch=''
-		BM_REPO_cmds=()
-	fi
 	if [[ -f ~/Branch-Manager/repoPack/packs.rpx ]]; then source ~/Branch-Manager/repoPack/packs.rpx; fi
 	case $1 in
 		'new')
@@ -17,6 +11,7 @@ rpo () {
 			printf "\e[32mRepo Default Branch: \e[37m"
 			read -r -p '' defBranch
 			initPackFile $curfolder $curdir $keyname "$defBranch" true
+			rpo $keyname
 		;;
 		'help')
 			printf "|"
