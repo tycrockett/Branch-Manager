@@ -285,7 +285,7 @@ bm () {
 								BMGLOBES_defaultBranch=$2
 				;;
 
-				'merge')
+				'merge-into')
 								git checkout $2
 								git merge $currentBranch
 								git push
