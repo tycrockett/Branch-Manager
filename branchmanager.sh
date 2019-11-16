@@ -14,11 +14,11 @@ bm () {
 		esac
 	done
 
-	if [ -z $BMREPO_defaultBranch ]; then
+	if [ -z $BMGLOBES_defaultBranch ]; then
 		echo "There is no repo pack set up, use rpo new to create a new pack to better use bm"
 	fi
 
-	if [ $BMREPO_check ] && [ $BMREPO_defaultBranch ]; then
+	if [ $BMREPO_check ] && [ $BMGLOBES_defaultBranch ]; then
 		if [ $BMCHECK_HELP == true ]; then
 			curdir=$(pwd)
 			currentBranch=$(git symbolic-ref --short -q HEAD)
