@@ -297,7 +297,7 @@ bm () {
 								git checkout $currentBranch
 				;;
 
-				'delete')
+				'delete'|'d')
 								clearIt
 								used=true
 								status=$(git status)
@@ -346,7 +346,7 @@ bm () {
 									_echoR "status | s" "Get status of branch"
 									_echoR "update | u" "Update (default branch) and merge into (current branch)"
 									_echoR "rename | rn" "Rename current branch"
-									_echoR "delete" "Delete current branch"
+									_echoR "delete | d" "Delete current branch"
 									_echoR "remote" "Open github remote branch"
 									_echoR "clear" "Delete any uncommitted changes in branch"
 									_echoR "merge-into" "Merge current branch into (branch)"
