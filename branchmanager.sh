@@ -5,20 +5,19 @@ bm () {
 	numberString="^[0-9]+$"
 	BMCHECK_HELP=true
 
-	for arg; do
-		case $arg in
-			-help)
-				bm help $1
-				BMCHECK_HELP=false
-			;;
-		esac
-	done
-
-	if [ -z $BMGLOBES_defaultBranch ]; then
+	if [ $BMREPO_check ] && [ -z $BMGLOBES_defaultBranch ]; then
 		echo "There is no repo pack set up, use rpo new to create a new pack to better use bm"
 	fi
 
 	if [ $BMREPO_check ] && [ $BMGLOBES_defaultBranch ]; then
+		for arg; do
+			case $arg in
+				-help)
+					bm help $1
+					BMCHECK_HELP=false
+				;;
+			esac
+		done
 		if [ $BMCHECK_HELP == true ]; then
 			curdir=$(pwd)
 			currentBranch=$(git symbolic-ref --short -q HEAD)
@@ -124,7 +123,7 @@ bm () {
 								tmp="..$currentBranch"
 								tmpN=5
 								if [[ -n $2 ]]; then tmpN=$2; fi;
-								if [[ $currentBranch == $BMGLOBES_defaultBranch ]]; then tmp=''; fi;
+								if [[ $currentBranch == $BMGLOBES_defaultBranch ]]; then tmp=" --"; fi;
 								_runCMD "git log $BMGLOBES_defaultBranch$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative" false
 								git log -n $tmpN $BMGLOBES_defaultBranch$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
 				;;

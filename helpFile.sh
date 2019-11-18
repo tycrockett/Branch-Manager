@@ -74,7 +74,7 @@ showHelp () {
       echo "Required Opts: relative filepath"
       echo "bm rm-file (relative filepath)"
       printf "\e[37m"
-      echo "- hash=$(git merge-base (default branch) (current branch))"
+      echo "- hash=(git merge-base (default branch) (current branch))"
       echo "- git checkout (hash) (relative filepath)"
       echo "- git commit -m 'Remove (relative filepath) from commit'"
     ;;
@@ -103,7 +103,7 @@ showHelp () {
     ;;
     'remote')
       _BM_header "remote" "\e[34m"
-      echo "- tmp='https://github.$(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
+      echo "- tmp='https://github.(git config remote.origin.url | cut -f2 -d. | tr ':' /)"
       echo "- open (tmp)/tree/(current branch)"
     ;;
     'update'|'u')

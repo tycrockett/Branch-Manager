@@ -67,7 +67,7 @@ rpo () {
 				folder=${dir##*/}
 				check="$2:$dir"
 				rebuildPack $check
-				del ~/Branch-Manager/repoPack/$folder.rpx
+				rm ~/Branch-Manager/repoPack/$folder.rpx
 			fi
 		;;
 		'rm')
@@ -82,7 +82,7 @@ rpo () {
 						folder=${dir##*/}
 						check="$2:$dir"
 						rebuildPack $check
-						del ~/Branch-Manager/repoPack/$folder.rpx
+						rm ~/Branch-Manager/repoPack/$folder.rpx
 					else
 						echo
 						echo "That command/pack doesn't exist."
@@ -92,7 +92,7 @@ rpo () {
 				if [[ -f ~/Branch-Manager/repoPack/$curfolder.rpx ]]; then
 					check="$BM_REPO_keyname:$BM_REPO_directory"
 					rebuildPack $check
-					del ~/Branch-Manager/repoPack/$curfolder.rpx
+					rm ~/Branch-Manager/repoPack/$curfolder.rpx
 				else
 					echo
 					echo $curdir
@@ -147,7 +147,7 @@ initPackFile () {
 			echo
 			echo "$keyname already exists!"
 		else
-			del ~/Branch-Manager/repoPack/$1.rpx
+			rm ~/Branch-Manager/repoPack/$1.rpx
 		fi
 	fi
 
@@ -172,7 +172,7 @@ addNewPack () {
 rebuildPack () {
 	if [[ -f ~/Branch-Manager/repoPack/packs.rpx ]]; then 
 		source ~/Branch-Manager/repoPack/packs.rpx
-		del ~/Branch-Manager/repoPack/packs.rpx 
+		rm ~/Branch-Manager/repoPack/packs.rpx 
 	fi
 	touch ~/Branch-Manager/repoPack/packs.rpx
 	echo "BM_REPOS=()"  >> ~/Branch-Manager/repoPack/packs.rpx
