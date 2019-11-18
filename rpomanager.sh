@@ -35,7 +35,7 @@ rpo () {
 		;;
 		'list')
 			echo
-			echo "Saved Packs:"
+			_BM_header "Saved Packs" "\e[33m"
 			length=0
 			for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
 				cmdName=$(cut -d ":" -f 1 <<< "${BM_REPOS[i]}")
