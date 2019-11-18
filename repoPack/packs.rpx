@@ -1,7 +1,0 @@
-BM_REPOS=()
-BM_REPOS+=('jub:/Users/ty.crockett@getweave.com/projects/weave/platform-desktop-client')
-BM_REPOS+=('mapp:/Users/ty.crockett@getweave.com/projects/mortgage_app')
-BM_REPOS+=('trade:/Users/ty.crockett@getweave.com/projects/trade')
-BM_REPOS+=('deskapi:/Users/ty.crockett@getweave.com/projects/go/src/weavelab.xyz/platform-desktop-api')
-BM_REPOS+=('bm:/Users/ty.crockett@getweave.com/Branch-Manager')
-BM_REPOS+=('econ:/Users/ty.crockett@getweave.com/projects/econ')
