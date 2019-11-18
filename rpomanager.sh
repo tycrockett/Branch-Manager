@@ -61,15 +61,6 @@ rpo () {
 				rebuildPack $check "$BM_REPO_keyname:$BM_REPO_directory"
 			fi
 		;;
-		'del')
-			dir=$(getRepoByKeyname $2)
-			if [[ dir != 'INVALID' ]]; then
-				folder=${dir##*/}
-				check="$2:$dir"
-				rebuildPack $check
-				rm ~/Branch-Manager/repoPack/$folder.rpx
-			fi
-		;;
 		'rm')
 			if [[ -n $2 ]]; then
 			idx=$(indexCmd $2)
