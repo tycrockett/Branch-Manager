@@ -334,7 +334,34 @@ bm () {
 				'diff')
 									git diff $BMGLOBES_defaultBranch..HEAD -- $2
 				;;
-				''|*[[:digit:]]*)
+				'help')
+								if [[ -z $2 ]]; then
+									echo
+									printf "bm \e[34mcmd\e[37m\n"
+									echo "---------"
+									_echoR "[blank]" "List all branchs"
+									_echoR "[branch name]" "Checkout (branch name)"
+									_echoR "new | n" "Create new branch"
+									_echoR ". | acp" "Commit all changes"
+									_echoR "status | s" "Get status of branch"
+									_echoR "update | u" "Update (default branch) and merge into (current branch)"
+									_echoR "rename | rn" "Rename current branch"
+									_echoR "delete" "Delete current branch"
+									_echoR "remote" "Open github remote branch"
+									_echoR "clear" "Delete any uncommitted changes in branch"
+									_echoR "merge-into" "Merge current branch into (branch)"
+									_echoR "compop" "Delete last commit"
+									_echoR "log" "Log commit history"
+									_echoR "rm-file" "Remove a file from commit history"
+									_echoR "pushup" "set upstream remote branch"
+									_echoR "diff" "Get the difference for specific file"
+								else
+									showHelp $2
+								fi
+				;;
+				*)
+								if [ -z $1 ] || [ "$1" -gt -1 ] 2>/dev/null; then
+
 									ll=0
 									br=()
 									current=$(git symbolic-ref --short -q HEAD)
@@ -384,36 +411,11 @@ bm () {
 											coBranch=${br[@]:$opt:1}
 										fi
 										_runCMD "git checkout $coBranch" true
-									fi	
-					;;
-					'help')
-									if [[ -z $2 ]]; then
-										echo
-										printf "bm \e[34mcmd\e[37m\n"
-										echo "---------"
-										_echoR "[blank]" "List all branchs"
-										_echoR "[branch name]" "Checkout (branch name)"
-										_echoR "new | n" "Create new branch"
-										_echoR ". | acp" "Commit all changes"
-										_echoR "status | s" "Get status of branch"
-										_echoR "update | u" "Update (default branch) and merge into (current branch)"
-										_echoR "rename | rn" "Rename current branch"
-										_echoR "delete" "Delete current branch"
-										_echoR "remote" "Open github remote branch"
-										_echoR "clear" "Delete any uncommitted changes in branch"
-										_echoR "merge-into" "Merge current branch into (branch)"
-										_echoR "compop" "Delete last commit"
-										_echoR "log" "Log commit history"
-										_echoR "rm-file" "Remove a file from commit history"
-										_echoR "pushup" "set upstream remote branch"
-										_echoR "diff" "Get the difference for specific file"
-									else
-										showHelp $2
 									fi
-					;;
-					*)
+								else
 									git checkout $1
 									_BM_header $1
+								fi
 					;;
 				esac
 			fi
