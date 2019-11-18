@@ -340,7 +340,7 @@ bm () {
 									printf "bm \e[34mcmd\e[37m\n"
 									echo "---------"
 									_echoR "[blank]" "List all branchs"
-									_echoR "[branch num]" "Checkout (branch name)"
+									_echoR "[branch num]" "Checkout (branch num)"
 									_echoR "" "0 always goes to default branch"
 									_echoR "[branch name]" "Checkout (branch name)"
 									_echoR "new | n" "Create new branch"
