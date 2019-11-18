@@ -66,6 +66,7 @@ bm () {
 									fi
 								fi
 				;;
+				'untrack') git rm --cached $1;;
 				'clear')
 								if [[ $2 == '-f' ]]; then
 									_runCMD "git add ." true
