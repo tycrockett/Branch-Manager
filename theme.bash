@@ -40,8 +40,8 @@ function prompt_command() {
         if [[ -z $tytheme_remoteCheck ]]; then
             tytheme_icon="${bold_red}!"
         else
-            if [[ $tytheme_curBranch == $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}♔"; fi;
-            if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}☉"; fi;
+            if [[ $tytheme_curBranch == $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}♔ "; fi;
+            if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}☉ "; fi;
         fi;
 
         tmp=''
