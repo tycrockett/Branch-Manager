@@ -460,15 +460,15 @@ _echoR () {
 	printf " \e[34m%${len}s\e[37m%s\n" "$1 " " $2"
 }
 
-_updateColor () {
-	check=""
-	case $1 in
-		'green') check="\e[32m";;
-		'white') check="\e[37m";;
-		*) check="\e[37m";;
-	esac
-	echo $check
-}
+# _updateColor () {
+# 	check=""
+# 	case $1 in
+# 		'green') check="\e[32m";;
+# 		'white') check="\e[37m";;
+# 		*) check="\e[37m";;
+# 	esac
+# 	echo $check
+# }
 
 _print () {
 	col=$(_updateColor $2)
