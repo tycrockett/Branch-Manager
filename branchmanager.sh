@@ -337,8 +337,7 @@ bm () {
 				'help')
 								if [[ -z $2 ]]; then
 									echo
-									printf "bm \e[34mcmd\e[37m\n"
-									echo "---------"
+									_BM_header "bm cmd" "\e[34m"
 									_echoR "[blank]" "List all branchs"
 									_echoR "[branch num]" "Checkout (branch num)"
 									_echoR "" "0 always goes to default branch"
@@ -458,21 +457,6 @@ _echoR () {
 	len=15
 	if [[ -n $3 ]]; then len=`expr $3 + 2`; fi
 	printf " \e[34m%${len}s\e[37m%s\n" "$1 " " $2"
-}
-
-# _updateColor () {
-# 	check=""
-# 	case $1 in
-# 		'green') check="\e[32m";;
-# 		'white') check="\e[37m";;
-# 		*) check="\e[37m";;
-# 	esac
-# 	echo $check
-# }
-
-_print () {
-	col=$(_updateColor $2)
-	printf "$col$1\e[37m$3"
 }
 
 _runCMD() {
