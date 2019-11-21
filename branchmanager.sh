@@ -419,6 +419,7 @@ bm () {
 									if [[ -n $exister ]]; then
 										git checkout $1
 									else
+										echo
 										echo "$1 doesn't exist"
 									fi
 								fi
