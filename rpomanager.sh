@@ -45,7 +45,7 @@ rpo () {
 			for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
 				cmdName=$(cut -d ":" -f 1 <<< "${BM_REPOS[i]}")
 				cmd=$(cut -d ":" -f 2 <<< "${BM_REPOS[i]}")
-				printf "|"
+				cmd="~${cmd//$BMGLOBES_basepath/}"
 				_echoR $cmdName $cmd $length
 			done
 		;;

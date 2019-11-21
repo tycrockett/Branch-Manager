@@ -1,3 +1,4 @@
+BMGLOBES_basepath=$(cd ~; pwd)
 source ~/Branch-Manager/theme.bash
 source ~/Branch-Manager/helpFile.sh
 bm () {
