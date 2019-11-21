@@ -419,7 +419,7 @@ bm () {
 										git checkout $1
 									else
 										echo
-										echo "$1 doesn't exist"
+										printf "\e[37mBranch \e[34m$1 \e[37mdoes not exist\n"
 									fi
 								fi
 					;;
