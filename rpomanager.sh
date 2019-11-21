@@ -14,23 +14,14 @@ rpo () {
 			rpo $keyname
 		;;
 		'help')
-			printf "|"
 			_echoR "rpo"	"Create new repo pack to current directory"
-				printf "|"
 			_echoR "rpo [key]" "Go to repo directory"
-			printf "|"
 			_echoR "rpo list" "List all saved repo packs"
-			printf "|"
 			_echoR "rpo pack" "List all repo pack details"
-			printf "|"
 			_echoR "rpo edit" "Edit the repo keyname and default branch"
-			printf "|"
 			_echoR "rpo rm" "Remove repo pack"
-			printf "|"
 			_echoR "rpo cmd" "Create new cmd"
-			printf "|"
 			_echoR "rpo cmd [cmd]" "Edit [cmd]"
-			printf "|"
 			_echoR "rpo rm [cmd]" "Remove a cmd from a repo pack"
 		;;
 		'list')
