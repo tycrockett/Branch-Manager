@@ -415,8 +415,12 @@ bm () {
 										_runCMD "git checkout $coBranch" true
 									fi
 								else
-									git checkout $1
-									_BM_header $1
+									exister=$(git show-ref $1 2> /dev/null)
+									if [[ -n $exister ]]; then
+										git checkout $1
+									else
+										echo "$1 doesn't exist"
+									fi
 								fi
 					;;
 				esac
