@@ -453,6 +453,16 @@ bm () {
 		fi
 }
 
+_updateColor () {
+	check=""
+	case $1 in
+		'green') check="\e[32m";;
+		'white') check="\e[37m";;
+		*) check="\e[37m";;
+	esac
+	echo $check
+}
+
 _print () {
 	col=$(_updateColor $2)
 	printf "$col$1\e[37m$3"
