@@ -453,6 +453,11 @@ bm () {
 		fi
 }
 
+_print () {
+	col=$(_updateColor $2)
+	printf "$col$1\e[37m$3"
+}
+
 _echoR () {
 	len=15
 	if [[ -n $3 ]]; then len=`expr $3 + 2`; fi
