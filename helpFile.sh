@@ -108,11 +108,16 @@ showHelp () {
     ;;
     'update'|'u')
       _BM_header "update | u" "\e[34m"
+      printf "\e[32m"
+      echo "Optional Opts: -self"
+      printf "\e[37m"
       echo "- If no changes exist:"
       echo "- git checkout (default branch)"
       echo "- git pull origin (default branch)"
       echo "- git checkout (current branch)"
       echo "- git merge (default branch)"
+      echo "- Option: -self"
+      echo "  - git pull"
     ;;
     'default-b')
       _BM_header "'default-b" "\e[34m"
