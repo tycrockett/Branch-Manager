@@ -245,44 +245,48 @@ bm () {
 				;;
 
 				'update'|'u')
-							status=$(git status)
-							fixed=${status: -37}
-							if [[ $fixed == "nothing to commit, working tree clean" ]]; then
-								echo
-								if [[ $currentBranch != $BMGLOBES_defaultBranch ]]; then
-									_runCMD "git checkout $BMGLOBES_defaultBranch" true "\e[37m"
-									echo
-								fi
-								_runCMD "git pull origin $BMGLOBES_defaultBranch" true "\e[33m"
-								echo
-								if [[ -z $2 ]] && [[ $currentBranch != $BMGLOBES_defaultBranch ]]; then
-									_runCMD "git checkout $currentBranch" true "\e[37m"
-									echo
-									_runCMD "git merge $BMGLOBES_defaultBranch" true "\e[32m"
-									echo
-								fi
-
-								if [[ $2 == 'all' ]]; then
-									for branch in $(git branch | grep "[^* ]+" -Eo);
-									do
-										if [[ $branch != $BMGLOBES_defaultBranch ]]; then
-											_runCMD "git checkout $branch" true
-											_runCMD "git merge $BMGLOBES_defaultBranch" true
-										fi
-										br+=($branch)
-									done
-									if [[ $branch != $currentBranch ]]; then 
-										echo
-										_runCMD "git checkout $currentBranch " true
-									fi
-								fi
-								used=true
+							if [[ $2 == '-self' ]]; then
+								git pull
 							else
-								echo
-								printf "\e[31m"
-								echo "Your local changes would be overwritten."
-								echo "Please commit your changes or stash them before you switch branches."
-								printf "\e[37m"
+								status=$(git status)
+								fixed=${status: -37}
+								if [[ $fixed == "nothing to commit, working tree clean" ]]; then
+									echo
+									if [[ $currentBranch != $BMGLOBES_defaultBranch ]]; then
+										_runCMD "git checkout $BMGLOBES_defaultBranch" true "\e[37m"
+										echo
+									fi
+									_runCMD "git pull origin $BMGLOBES_defaultBranch" true "\e[33m"
+									echo
+									if [[ -z $2 ]] && [[ $currentBranch != $BMGLOBES_defaultBranch ]]; then
+										_runCMD "git checkout $currentBranch" true "\e[37m"
+										echo
+										_runCMD "git merge $BMGLOBES_defaultBranch" true "\e[32m"
+										echo
+									fi
+
+									if [[ $2 == 'all' ]]; then
+										for branch in $(git branch | grep "[^* ]+" -Eo);
+										do
+											if [[ $branch != $BMGLOBES_defaultBranch ]]; then
+												_runCMD "git checkout $branch" true
+												_runCMD "git merge $BMGLOBES_defaultBranch" true
+											fi
+											br+=($branch)
+										done
+										if [[ $branch != $currentBranch ]]; then 
+											echo
+											_runCMD "git checkout $currentBranch " true
+										fi
+									fi
+									used=true
+								else
+									echo
+									printf "\e[31m"
+									echo "Your local changes would be overwritten."
+									echo "Please commit your changes or stash them before you switch branches."
+									printf "\e[37m"
+								fi
 							fi
 				;;
 
