@@ -135,6 +135,10 @@ bm () {
 								git commit -m "Remove $2 from commit"
 				;;
 
+				'pick')
+								git cherry-pick -x $2
+				;;
+
 				'status'|'s')
 								SHOWALLDETAILS=false
 								SHOWDETAILS=false
@@ -215,6 +219,11 @@ bm () {
 								bm remote
 				;;
 
+				'branchoff'|'b')
+								git pull
+								git checkout -b $2
+				;;
+
 				'remote')
 								check=false
 								for arg; do
@@ -245,8 +254,11 @@ bm () {
 				;;
 
 				'update'|'u')
-							if [[ $2 == '-self' ]]; then
+							if [[ $2 == 'from' ]]; then
+								git checkout $3
 								git pull
+								git checkout $currentBranch
+								git merge $3
 							else
 								status=$(git status)
 								fixed=${status: -37}
