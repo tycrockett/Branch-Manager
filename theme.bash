@@ -35,15 +35,6 @@ function prompt_command() {
 
         tytheme_curBranch=$(git symbolic-ref --short -q HEAD)
 
-        tmp='';
-        tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
-        if [[ -z $tytheme_remoteCheck ]]; then
-            tytheme_icon="${bold_red}!"
-        else
-            if [[ $tytheme_curBranch == $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}♔ "; fi;
-            if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}☉ "; fi;
-        fi;
-
         tmp=''
         if [[ $BMGLOBES_defaultBranch != 'master' ]]; then tmp="origin/$BMGLOBES_defaultBranch"; fi;
         if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tmp="$BMGLOBES_defaultBranch...$tytheme_curBranch"; fi;
@@ -54,9 +45,17 @@ function prompt_command() {
             tytheme_changeDetails="\n| $tmp"
         fi
 
-        if [[ $BMGLOBES_defaultBranch != '' ]]; then
+        tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
+        if [[ -z $tytheme_remoteCheck ]]; then
+            tytheme_icon="${bold_red}!"
+        else
+            if [[ $tytheme_curBranch == $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}♔ "; fi;
+            if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}☉ "; fi;
+            if [[ $BMGLOBES_defaultBranch != '' ]]; then
             tmp=$(git rev-list --count origin/$BMGLOBES_defaultBranch...$BMGLOBES_defaultBranch)
         fi
+        fi;
+
         if [[ $tmp > 0 ]]; then
             tmp1=" ${bold_blue}☝${white}"; 
             tytheme_GIT_UPDATER+=$tmp1
