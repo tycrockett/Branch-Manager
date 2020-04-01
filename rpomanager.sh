@@ -31,7 +31,7 @@ rpo () {
 			for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
 				cmdName=$(cut -d ":" -f 1 <<< "${BM_REPOS[i]}")
 				len=${#cmdName}
-				if [[ $len > $length ]]; then length=$len; fi
+				if (( $len > $length )); then length=$len; fi
 			done
 			for ((i=0; i<${#BM_REPOS[@]}; ++i)); do
 				cmdName=$(cut -d ":" -f 1 <<< "${BM_REPOS[i]}")
