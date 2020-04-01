@@ -86,5 +86,5 @@ function prompt_command() {
         fi
 
 	fi;
-    PS1="\n${white}\W $tytheme_icon${bold_green} $tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${white}"
+    PS1="\n${white}\W $tytheme_icon${bold_green}$tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${white}"
 }
