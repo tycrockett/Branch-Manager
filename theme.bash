@@ -86,9 +86,9 @@ function prompt_command() {
             # ⚡
         fi
         # ${bold_blue}\n│
-        gitInfo="${white}$tytheme_icon${bold_green}$tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails"
+        gitInfo="${blue}|│| ${white}$tytheme_icon${bold_green}$tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails"
 	fi;
-    PS1="\n${bold_blue}╭│|${white} \W $gitInfo \n${bold_blue}╰─>${white} "
+    PS1="\n${bold_blue}╭─<${white} \W $gitInfo \n${bold_blue}╰─>${white} "
 }
 
 # ╭─╮
