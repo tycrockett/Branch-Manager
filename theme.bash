@@ -18,6 +18,7 @@ function prompt_command() {
     tytheme_GIT_UPDATER='';
     tytheme_remoteBRANCH='';
     tmp='';
+    gitInfo=""
     tytheme_gitterCheck=$(git rev-parse --git-dir 2> /dev/null);
     curfolder=${PWD##*/}
     loadRepoSettings $curfolder
@@ -47,7 +48,7 @@ function prompt_command() {
 
         tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
         if [[ -z $tytheme_remoteCheck ]]; then
-            tytheme_icon="${bold_red}!"
+            tytheme_icon="${bold_red}! "
         else
             if [[ $tytheme_curBranch == $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}♔ "; fi;
             if [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then tytheme_icon="${bold_cyan}☉ "; fi;
@@ -84,7 +85,12 @@ function prompt_command() {
             tytheme_GIT_UPDATER+=" ${bold_yellow}$tmp"
             # ⚡
         fi
-
+        # ${bold_blue}\n│
+        gitInfo="${white}$tytheme_icon${bold_green}$tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails"
 	fi;
-    PS1="\n${white}\W $tytheme_icon${bold_green}$tytheme_curBranch$tytheme_GIT_UPDATER${blue}$tytheme_changeDetails${bold_blue}\n[>${white}"
+    PS1="\n${bold_blue}╭│|${white} \W $gitInfo \n${bold_blue}╰─>${white} "
 }
+
+# ╭─╮
+# │ │
+# ╰─╯
