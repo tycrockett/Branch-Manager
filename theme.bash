@@ -43,7 +43,7 @@ function prompt_command() {
 
         tmp=$(git diff "$tmp" --stat | tail -n1)
         if [[ -n $tmp ]] && [[ $tytheme_curBranch != $BMGLOBES_defaultBranch ]]; then
-            tytheme_changeDetails="\n| $tmp"
+            tytheme_changeDetails="\n${bold_blue}│ ${blue}$tmp"
         fi
 
         tytheme_remoteCheck=$(git branch -a | egrep "remotes/origin/${tytheme_curBranch}$")
