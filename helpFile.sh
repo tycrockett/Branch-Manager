@@ -30,7 +30,7 @@ showHelp () {
       echo "    - git push origin :(old name) (new name)"
       echo "    - git push origin -u (new name)"
     ;;
-    'clear')
+    'clear'|'c')
       _BM_header "clear" "\e[34m"
       printf "\e[32m"
       echo "Optional Opts: -f"

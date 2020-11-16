@@ -56,9 +56,9 @@ function prompt_command() {
             tmp=$(git rev-list --count origin/$BMGLOBES_defaultBranch...$BMGLOBES_defaultBranch)
         fi
         fi;
-
+# ☝
         if [[ $tmp > 0 ]]; then
-            tmp1=" ${bold_blue}☝${white}"; 
+            tmp1=" ${bold_blue}⚑${white}"; 
             tytheme_GIT_UPDATER+=$tmp1
         else 
             (git fetch origin $BMGLOBES_defaultBranch &>/dev/null &); 

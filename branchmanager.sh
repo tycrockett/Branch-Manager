@@ -66,24 +66,9 @@ bm () {
 									fi
 								fi
 				;;
-				'clear')
-								if [[ $2 == '-f' ]]; then
-									_runCMD "git add ." true
-								fi
-								used=true
+				'clear'|'c')
+								git add .
 								git stash
-								printf "\e[31mPermanetly clear stash on \e[32m$currentBranch\e[31m? \e[37m"
-								read -r -p '' response
-								if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
-									_runCMD "git stash clear" true
-								fi
-								status=$(git status)
-								fixed=${status: -37}
-								if [[ $fixed != "nothing to commit, working tree clean" ]]; then
-									echo
-									printf "\e[31mCouldn't clear entire stash\e[37m\n"
-									printf "Use \e[35mbm clear -f\e[37m to force bm clear\n"
-								fi
 				;;
 
 				'compop')
@@ -124,9 +109,12 @@ bm () {
 								tmp="..$currentBranch"
 								tmpN=5
 								if [[ -n $2 ]]; then tmpN=$2; fi;
-								if [[ $currentBranch == $BMGLOBES_defaultBranch ]]; then tmp=" --"; fi;
-								_runCMD "git log $BMGLOBES_defaultBranch$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative" false
-								git log -n $tmpN $BMGLOBES_defaultBranch$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
+								if [[ $currentBranch == $BMGLOBES_defaultBranch ]]; then 
+									tmp=" --"; 
+									git log -n $tmpN $BMGLOBES_defaultBranch --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
+								else
+									git log -n $tmpN $BMGLOBES_defaultBranch$tmp --graph --pretty=format:'%Cred%h%Creset | %C(bold blue)%an:%Creset %s %n%Cblue%cr%Creset' --abbrev-commit --date=relative
+								fi;
 				;;
 
 				'rm-file')
@@ -306,13 +294,6 @@ bm () {
 								BMGLOBES_defaultBranch=$2
 				;;
 
-				'merge-into')
-								git checkout $2
-								git merge $currentBranch
-								git push
-								git checkout $currentBranch
-				;;
-
 				'delete'|'d')
 								clearIt
 								used=true
@@ -365,7 +346,7 @@ bm () {
 									_echoR "rename | rn" "Rename current branch"
 									_echoR "delete | d" "Delete current branch"
 									_echoR "remote" "Open github remote branch"
-									_echoR "clear" "Delete any uncommitted changes in branch"
+									_echoR "clear | c" "Delete any uncommitted changes in branch"
 									_echoR "merge-into" "Merge current branch into (branch)"
 									_echoR "compop" "Delete last commit"
 									_echoR "log" "Log commit history"
